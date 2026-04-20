@@ -1,0 +1,248 @@
+
+body {
+  font-family: Arial;
+  margin: 0;
+  padding: 20px;
+  background: #98d8e4;
+}
+
+/* AÑO */
+h1 {
+  text-align: center;
+  font-size: 60px;
+  margin: 10px;
+}
+
+/* BOTONES */
+.controls {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+button {
+  padding: 10px 15px;
+  margin: 5px;
+  cursor: pointer;
+}
+
+/* GRID GENERAL (4 filas x 3 meses) */
+.calendar {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+/* MES */
+.month {
+  background: white;
+  padding: 10px;
+  border-radius: 10px;
+}
+
+/* TÍTULO MES */
+.month h3 {
+  text-align: center;
+  margin: 5px;
+}
+
+/* SEMANA */
+.days {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 3px;
+}
+
+/* DÍA */
+.day, .empty {
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* CUADRO DÍA */
+.day {
+  border: 1px solid #bcb6b6;
+  cursor: pointer;
+  background: rgb(231, 227, 227);
+}
+
+/* VACÍO */
+.empty {
+  border: none;
+}
+
+/* COLORES TAREAS */
+.embotellar { background: green; color: white; }
+.etiquetar { background: yellow; }
+.barricas { background: red; color: white; }
+.otros { background: orange; }
+.vendimia { background: purple; color: white; }
+.limpieza { background: blue; color: white; }
+
+/* VACACIONES */
+.vacaciones {
+  background: white !important;
+  border: 2px solid black;
+  border-radius: 50%;
+}
+
+/* MODAL */
+.modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+}
+
+.modal-content {
+  background: white;
+  width: 300px;
+  margin: 10% auto;
+  padding: 20px;
+  border-radius: 10px;
+}
+.days {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 3px;
+}
+
+.day, .empty {
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.weekday {
+  text-align: center;
+  font-weight: bold;
+  font-size: 12px;
+  opacity: 0.7;
+}
+.btn-pdf {
+  background: #50cf4c;  /* rojo elegante */
+  color: white;
+  font-weight: bold;
+}
+
+.btn-pdf:hover {
+  background: #50cf4c;
+}
+
+.legend {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  background: white;
+  padding: 12px;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  font-size: 13px;
+  z-index: 999;
+  width: 220px;
+}
+
+.legend h4 {
+  margin: 0 0 10px 0;
+  text-align: center;
+  font-size: 14px;
+}
+
+/* 🔥 2 columnas */
+.legend-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px 10px;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+
+/* colores */
+.color {
+  width: 12px;
+  height: 12px;
+  border-radius: 3px;
+  display: inline-block;
+}
+
+.embotellar { background: green; }
+.etiquetar { background: yellow; }
+.barricas { background: red; }
+.otros { background: orange; }
+.vendimia { background: purple; }
+.limpieza { background: blue; }
+
+.vacaciones {
+  background: rgb(169, 165, 165);
+  border: 2px solid black;
+}
+
+.stats {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  background: white;
+  padding: 12px;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  font-size: 13px;
+  width: 220px;
+  z-index: 999;
+}
+
+.stats h4 {
+  margin: 0 0 10px 0;
+  text-align: center;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px 10px;
+}
+
+/* 📱 MODO MÓVIL */
+@media (max-width: 768px) {
+
+  /* 1 mes por fila */
+  .calendar {
+    grid-template-columns: 1fr;
+  }
+
+  h1 {
+    font-size: 30px;
+  }
+
+  /* días más grandes */
+  .day, .empty {
+    height: 40px;
+    font-size: 14px;
+  }
+
+  /* botones más grandes */
+  button {
+    padding: 12px;
+    font-size: 16px;
+  }
+
+  /* glosario abajo */
+  .legend {
+    position: static;
+    width: 100%;
+    margin-bottom: 10px;
+  }
+
+  /* estadísticas abajo */
+  .stats {
+    position: static;
+    width: 100%;
+    margin-bottom: 10px;
+  }
+}

@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Calendario Anual</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+
+<h1 id="yearTitle"></h1>
+
+<div class="controls">
+  <button onclick="changeYear(-1)">⬅ Año Anterior</button>
+  <button onclick="changeYear(1)">Año Siguiente ➡</button>
+ <button class="btn-pdf" onclick="exportPDF()">Exportar PDF</button>
+ <div class="legend">
+  <h4>TIPO DE TAREAS</h4>
+
+  <div class="legend-grid">
+    <div class="legend-item"><span class="color embotellar"></span> Embotellar</div>
+    <div class="legend-item"><span class="color vendimia"></span> Vendimia</div>
+
+    <div class="legend-item"><span class="color etiquetar"></span> Etiquetar</div>
+    <div class="legend-item"><span class="color limpieza"></span> Limpieza</div>
+
+    <div class="legend-item"><span class="color barricas"></span> Barricas</div>
+    <div class="legend-item"><span class="color vacaciones"></span> Vacaciones</div>
+
+    <div class="legend-item"><span class="color otros"></span> Otros</div>
+  </div>
+</div>
+<div class="stats">
+  <h4>RESUMEN DEL AÑO</h4>
+
+  <div class="stats-grid">
+    <div>Embotellar: <span id="count-embotellar">0</span></div>
+    <div>Etiquetar: <span id="count-etiquetar">0</span></div>
+
+    <div>Barricas: <span id="count-barricas">0</span></div>
+    <div>Otros: <span id="count-otros">0</span></div>
+
+    <div>Vendimia: <span id="count-vendimia">0</span></div>
+    <div>Limpieza: <span id="count-limpieza">0</span></div>
+    
+    <div>Vacaciones: <span id="count-vacaciones">0</span></div>
+  </div>
+</div>
+</div>
+
+<div id="calendar" class="calendar"></div>
+
+<!-- MODAL -->
+<div id="modal" class="modal">
+  <div class="modal-content">
+    <h3 id="modalDate"></h3>
+
+    <select id="taskType">
+      <option value="">-- Seleccionar --</option>
+      <option value="embotellar">Embotellar</option>
+      <option value="etiquetar">Etiquetar</option>
+      <option value="barricas">Barricas</option>
+      <option value="otros">Otros</option>
+      <option value="vendimia">Vendimia</option>
+      <option value="limpieza">Limpieza</option>
+      <option value="vacaciones">Vacaciones</option>
+    </select>
+
+    <br><br>
+
+    <button onclick="saveTask()">Guardar</button>
+    <button onclick="deleteTask()">Borrar</button>
+    <button onclick="closeModal()">Cerrar</button>
+  </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
