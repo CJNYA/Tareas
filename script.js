@@ -137,7 +137,9 @@ function updateStats() {
     otros: 0,
     vendimia: 0,
     limpieza: 0,
-    vacaciones: 0
+    vacaciones: 0,
+    trasiegos: 0,
+    especial: 0
   };
 
   for (let key in localStorage) {
@@ -156,4 +158,6 @@ function updateStats() {
   document.getElementById("count-vendimia").innerText = types.vendimia;
   document.getElementById("count-limpieza").innerText = types.limpieza;
   document.getElementById("count-vacaciones").innerText = types.vacaciones;
+  document.getElementById("count-trasiegos").innerText = types.trasiegos;
+  document.getElementById("count-especial").innerText = types.especial;
 }

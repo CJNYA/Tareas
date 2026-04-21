@@ -11,41 +11,41 @@
 <h1 id="yearTitle"></h1>
 
 <div class="controls">
-  <button onclick="changeYear(-1)">⬅ Año Anterior</button>
-  <button onclick="changeYear(1)">Año Siguiente ➡</button>
- <button class="btn-pdf" onclick="exportPDF()">Exportar PDF</button>
- <div class="legend">
+  <button class="btn-year prev" onclick="changeYear(-1)">◀ Año Anterior</button>
+  <button class="btn-year next" onclick="changeYear(1)">Año Siguiente ▶</button>
+  <button class="btn-pdf" onclick="exportPDF()">Exportar PDF</button>
+</div>
+
+<!-- 🔥 AHORA FUERA -->
+<div class="stats">
+  <h4>RESUMEN DEL AÑO</h4>
+  <div class="stats-grid">
+    <div>Embotellar: <span id="count-embotellar">0</span></div>
+    <div>Etiquetar: <span id="count-etiquetar">0</span></div>
+    <div>Barricas: <span id="count-barricas">0</span></div>
+    <div>Otros: <span id="count-otros">0</span></div>
+    <div>Vendimia: <span id="count-vendimia">0</span></div>
+    <div>Limpieza: <span id="count-limpieza">0</span></div>
+    <div>Vacaciones: <span id="count-vacaciones">0</span></div>
+    <div>Trasiegos: <span id="count-trasiegos">0</span></div>
+    <div>Especial: <span id="count-especial">0</span></div>
+  </div>
+</div>
+
+<div class="legend">
   <h4>TIPO DE TAREAS</h4>
 
   <div class="legend-grid">
     <div class="legend-item"><span class="color embotellar"></span> Embotellar</div>
     <div class="legend-item"><span class="color vendimia"></span> Vendimia</div>
-
     <div class="legend-item"><span class="color etiquetar"></span> Etiquetar</div>
     <div class="legend-item"><span class="color limpieza"></span> Limpieza</div>
-
     <div class="legend-item"><span class="color barricas"></span> Barricas</div>
     <div class="legend-item"><span class="color vacaciones"></span> Vacaciones</div>
-
     <div class="legend-item"><span class="color otros"></span> Otros</div>
+    <div class="legend-item"><span class="color trasiegos"></span> Trasiegos</div>
+    <div class="legend-item"><span class="color especial"></span> Especial</div>
   </div>
-</div>
-<div class="stats">
-  <h4>RESUMEN DEL AÑO</h4>
-
-  <div class="stats-grid">
-    <div>Embotellar: <span id="count-embotellar">0</span></div>
-    <div>Etiquetar: <span id="count-etiquetar">0</span></div>
-
-    <div>Barricas: <span id="count-barricas">0</span></div>
-    <div>Otros: <span id="count-otros">0</span></div>
-
-    <div>Vendimia: <span id="count-vendimia">0</span></div>
-    <div>Limpieza: <span id="count-limpieza">0</span></div>
-    
-    <div>Vacaciones: <span id="count-vacaciones">0</span></div>
-  </div>
-</div>
 </div>
 
 <div id="calendar" class="calendar"></div>
@@ -64,6 +64,8 @@
       <option value="vendimia">Vendimia</option>
       <option value="limpieza">Limpieza</option>
       <option value="vacaciones">Vacaciones</option>
+      <option value="trasiegos">Trasiegos</option>
+      <option value="especial">Especial</option>
     </select>
 
     <br><br>
@@ -75,5 +77,6 @@
 </div>
 
 <script src="script.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 </body>
 </html>
