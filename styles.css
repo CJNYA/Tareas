@@ -80,12 +80,16 @@ button {
 .vendimia { background: purple; color: white; }
 .limpieza { background: blue; color: white; }
 .trasiegos { background: rgb(225, 28, 114); }
-.especial { background: rgb(92, 61, 4); }
+.especial {
+  background: white !important;
+  border: 4px solid rgb(244, 5, 5);
+  border-radius: 50%;
+}
 
 /* VACACIONES */
 .vacaciones {
   background: white !important;
-  border: 2px solid black;
+  border: 4px solid black;
   border-radius: 50%;
 }
 
@@ -182,7 +186,10 @@ button {
 .vendimia { background: purple; }
 .limpieza { background: blue; }
 .trasiegos { background: rgb(225, 28, 114); }
-.especial { background: rgb(92, 61, 4); }
+.especial {
+  background: rgb(169, 165, 165);
+  border: 2px solid rgb(248, 5, 5);
+}
 
 .vacaciones {
   background: rgb(169, 165, 165);
@@ -286,7 +293,6 @@ button {
     margin: 5mm;
   }
 
-  /* Mantener colores */
   * {
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
@@ -294,11 +300,9 @@ button {
 
   body {
     background: white;
-    padding: 0;
     margin: 0;
-
-    /* 🔥 ESCALA PARA QUE ENTRE TODO */
-    zoom: 0.75;
+    padding: 0;
+    zoom: 0.68;
   }
 
   /* ❌ quitar botones */
@@ -307,42 +311,48 @@ button {
     display: none !important;
   }
 
-  /* 🔥 quitar fixed (MUY IMPORTANTE) */
+  /* 🔥 CONTENEDOR SUPERIOR */
   .stats,
   .legend {
     position: static !important;
-    width: 48%;
+    width: 42%;
     display: inline-block;
     vertical-align: top;
-    margin-bottom: 10px;
   }
 
-  /* 🔥 mantener formato calendario */
+  /* 🔥 forzar misma línea */
+  .stats {
+    margin-right: 5%;
+  }
+
+  /* 🔥 evitar que el calendario suba */
+  #calendar {
+    clear: both;
+    margin-top: 10px;
+  }
+
+  /* 🔥 mantener GRID (IMPORTANTE) */
   .calendar {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 10px;
   }
 
-  /* 🔥 evitar cortes de meses */
+  /* 🔥 evitar cortes raros */
   .month {
     break-inside: avoid;
     page-break-inside: avoid;
-    
   }
-    .days {
+
+  /* 🔥 MUY IMPORTANTE: no romper semanas */
+  .days {
     break-inside: avoid;
-    page-break-inside: avoid;
   }
 
-  .weekday {
-    break-after: avoid;
-  }
-
-  /* 🔥 compactar */
+  /* compactar */
   .month h3 {
     font-size: 12px;
-    margin: 2px;
+    margin: 1px;
   }
 
   .weekday {
@@ -358,5 +368,9 @@ button {
     font-size: 28px;
     margin: 5px;
   }
-
+  
 }
+
+
+
+
