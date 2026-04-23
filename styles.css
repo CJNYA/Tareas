@@ -302,7 +302,7 @@ button {
     background: white;
     margin: 0;
     padding: 0;
-    zoom: 0.68;
+    zoom: 0.90;
   }
 
   /* ❌ quitar botones */
@@ -315,7 +315,7 @@ button {
   .stats,
   .legend {
     position: static !important;
-    width: 42%;
+    width: 44%;
     display: inline-block;
     vertical-align: top;
   }
@@ -351,8 +351,8 @@ button {
 
   /* compactar */
   .month h3 {
-    font-size: 12px;
-    margin: 1px;
+    font-size: 14px;
+    margin: 2px;
   }
 
   .weekday {
@@ -365,12 +365,70 @@ button {
   }
 
   h1 {
-    font-size: 28px;
+    font-size: 36px;
     margin: 5px;
   }
   
+  
+}
+/* MODAL MÁS PROFESIONAL */
+.modal-content {
+  background: rgb(236, 237, 203);
+  width: 320px;
+  margin: 8% auto;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+  text-align: center;
 }
 
+/* TÍTULO */
+.modal-content h3 {
+  margin-bottom: 15px;
+}
+
+/* SELECT MÁS BONITO */
+#taskType {
+  width: 100%;
+  padding: 10px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+  margin-bottom: 15px;
+  cursor: pointer;
+}
+
+/* BOTONES DEL MODAL */
+.modal-content button {
+  width: 30%;
+  padding: 8px;
+  margin: 5px;
+  border: none;
+  border-radius: 6px;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+/* COLORES */
+.modal-content button:nth-of-type(1) {
+  background: #28a745; /* guardar */
+}
+
+.modal-content button:nth-of-type(2) {
+  background: #dc3545; /* borrar */
+}
+
+.modal-content button:nth-of-type(3) {
+  background: #6c757d; /* cerrar */
+}
+
+/* HOVER */
+.modal-content button:hover {
+  transform: scale(1.05);
+  opacity: 0.9;
+}
 
 
 
