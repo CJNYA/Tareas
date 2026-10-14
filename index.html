@@ -1,82 +1,320 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<title>Calendario Anual</title>
-<link rel="stylesheet" href="styles.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta name="theme-color" content="#2e7d32">
+
+    <title>Depósitos y Movimientos</title>
+
+    <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
-<h1 id="yearTitle"></h1>
+<header class="app-header">
 
-<div class="controls">
-  <button class="btn-year prev" onclick="changeYear(-1)">◀ Año Anterior</button>
-  <button class="btn-year next" onclick="changeYear(1)">Año Siguiente ▶</button>
-  <button class="btn-pdf" onclick="exportPDF()">Exportar PDF</button>
+    <div>
+        <h1>Depósitos y Movimientos</h1>
+        <small>Gestión de bodega</small>
+    </div>
+
+    <span id="guardado">Guardado</span>
+
+</header>
+
+
+<!-- NAVEGACIÓN -->
+
+<nav class="top-nav">
+
+    <button
+        class="nav-btn active"
+        data-page="depositos">
+        🛢️ Depósitos
+    </button>
+
+    <button
+        class="nav-btn"
+        data-page="movimientos">
+        📋 Movimientos
+    </button>
+
+</nav>
+
+
+<main>
+
+
+<!-- =====================================================
+     PÁGINA DEPÓSITOS
+===================================================== -->
+
+<section
+    id="depositos"
+    class="page active">
+
+    <div class="page-heading">
+
+        <div>
+
+            <h2>Depósitos</h2>
+
+            <p>
+                Crea y gestiona los depósitos de la bodega.
+            </p>
+
+        </div>
+
+        <button
+            id="nuevo"
+            class="btn btn-primary">
+
+            ＋ Añadir depósito
+
+        </button>
+
+    </div>
+
+
+    <div class="card">
+
+        <div class="table-container">
+
+            <table>
+
+                <thead>
+
+                    <tr>
+
+                        <th>Depósito</th>
+
+                        <th>Tipo</th>
+
+                        <th>Capacidad (L)</th>
+
+                        <th>Estado</th>
+
+                        <th>Acciones</th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody id="depBody"></tbody>
+
+            </table>
+
+        </div>
+
+
+        <div
+            id="depEmpty"
+            class="empty">
+
+            No hay depósitos creados.
+
+        </div>
+
+    </div>
+
+</section>
+
+
+
+<!-- =====================================================
+     PÁGINA MOVIMIENTOS
+===================================================== -->
+
+<section
+    id="movimientos"
+    class="page">
+
+    <div class="page-heading">
+
+        <div>
+
+            <h2>Movimientos</h2>
+
+            <p>
+                Introduce manualmente los movimientos de cada depósito.
+            </p>
+
+        </div>
+
+        <button
+            id="pdf"
+            class="btn btn-primary">
+
+            📄 Exportar PDF
+
+        </button>
+
+    </div>
+
+
+    <div id="movBody"></div>
+
+
+    <div
+        id="movEmpty"
+        class="empty">
+
+        No hay depósitos activos.
+        Crea o activa alguno en Depósitos.
+
+    </div>
+
+</section>
+
+</main>
+
+
+
+<!-- =====================================================
+     MODAL NUEVO / EDITAR DEPÓSITO
+===================================================== -->
+
+<div
+    id="modal"
+    class="modal hidden">
+
+    <div class="modal-background"></div>
+
+
+    <div class="modal-box">
+
+
+        <div class="modal-header">
+
+            <h3 id="mtitle">
+                Añadir depósito
+            </h3>
+
+            <button
+                id="cerrar"
+                class="modal-close">
+
+                ×
+
+            </button>
+
+        </div>
+
+
+
+        <form id="form">
+
+            <input
+                type="hidden"
+                id="did">
+
+
+            <label>
+
+                Depósito
+                (número o texto)
+
+                <input
+                    id="nombre"
+                    type="text"
+                    placeholder="Ej. 24 o Auxiliar 1"
+                    required>
+
+            </label>
+
+
+
+            <label>
+
+                Capacidad (litros)
+
+                <input
+                    id="capacidad"
+                    type="number"
+                    min="0"
+                    step="1"
+                    required>
+
+            </label>
+
+
+
+            <label>
+
+                Tipo
+
+                <select id="tipo">
+
+                    <option value="fermentador">
+                        Fermentador
+                    </option>
+
+                    <option value="almacenamiento">
+                        Almacenamiento
+                    </option>
+
+                </select>
+
+            </label>
+
+
+
+            <label class="check-label">
+
+                <input
+                    id="activo"
+                    type="checkbox"
+                    checked>
+
+                Depósito activo
+
+            </label>
+
+
+
+            <div class="modal-buttons">
+
+                <button
+                    type="button"
+                    id="cancelar"
+                    class="btn btn-secondary">
+
+                    Cancelar
+
+                </button>
+
+
+                <button
+                    type="submit"
+                    class="btn btn-primary">
+
+                    Guardar
+
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
 </div>
 
-<!-- 🔥 AHORA FUERA -->
-<div class="stats">
-  <h4>RESUMEN DEL AÑO</h4>
-  <div class="stats-grid">
-    <div>Embotellar: <span id="count-embotellar">0</span></div>
-    <div>Etiquetar: <span id="count-etiquetar">0</span></div>
-    <div>Barricas: <span id="count-barricas">0</span></div>
-    <div>Otros: <span id="count-otros">0</span></div>
-    <div>Vendimia: <span id="count-vendimia">0</span></div>
-    <div>Limpieza: <span id="count-limpieza">0</span></div>
-    <div>Vacaciones: <span id="count-vacaciones">0</span></div>
-    <div>Trasiegos: <span id="count-trasiegos">0</span></div>
-    <div>Especial: <span id="count-especial">0</span></div>
-  </div>
-</div>
 
-<div class="legend">
-  <h4>TIPO DE TAREAS</h4>
 
-  <div class="legend-grid">
-    <div class="legend-item"><span class="color embotellar"></span> Embotellar</div>
-    <div class="legend-item"><span class="color vendimia"></span> Vendimia</div>
-    <div class="legend-item"><span class="color etiquetar"></span> Etiquetar</div>
-    <div class="legend-item"><span class="color limpieza"></span> Limpieza</div>
-    <div class="legend-item"><span class="color barricas"></span> Barricas</div>
-    <div class="legend-item"><span class="color vacaciones"></span> Vacaciones</div>
-    <div class="legend-item"><span class="color otros"></span> Otros (Varios)</div>
-    <div class="legend-item"><span class="color trasiegos"></span> Trasiegos </div>
-    <div class="legend-item"><span class="color especial"></span> Especial (Evento)</div>
-  </div>
-</div>
+<!-- jsPDF -->
 
-<div id="calendar" class="calendar"></div>
+<script
+    src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js">
+</script>
 
-<!-- MODAL -->
-<div id="modal" class="modal">
-  <div class="modal-content">
-    <h3 id="modalDate"></h3>
 
-    <select id="taskType">
-      <option value="">-- Seleccionar --</option>
-      <option value="embotellar">Embotellar</option>
-      <option value="etiquetar">Etiquetar</option>
-      <option value="barricas">Barricas</option>
-      <option value="otros">Otros</option>
-      <option value="vendimia">Vendimia</option>
-      <option value="limpieza">Limpieza</option>
-      <option value="vacaciones">Vacaciones</option>
-      <option value="trasiegos">Trasiegos</option>
-      <option value="especial">Especial</option>
-    </select>
-
-    <br><br>
-
-    <button onclick="saveTask()">Guardar</button>
-    <button onclick="deleteTask()">Borrar</button>
-    <button onclick="closeModal()">Cerrar</button>
-  </div>
-</div>
+<!-- Nuestro JavaScript -->
 
 <script src="script.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+
 </body>
 </html>
