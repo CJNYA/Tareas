@@ -1013,46 +1013,62 @@
 
                 <!-- CABECERA -->
 
-                <div class="deposit-header">
+               <div class="deposit-header">
 
-                    <h3>
+    <div class="deposit-title-row">
 
-                        Depósito
-                        ${escapar(deposito.nombre)}
+        <div>
 
-                    </h3>
+            <h3>
+                Depósito ${escapar(deposito.nombre)}
+            </h3>
+
+            <div class="deposit-meta">
+
+                Capacidad:
+
+                <b>
+                    ${formatoNumero(deposito.cap)}
+                    L
+                </b>
+
+                ·
+
+                Tipo:
+
+                <b>
+
+                    ${
+                        deposito.tipo === "fermentador"
+                            ? "Fermentador"
+                            : "Almacenamiento"
+                    }
+
+                </b>
+
+            </div>
+
+        </div>
 
 
-                    <div class="deposit-meta">
+        <div class="deposit-specifications">
 
-                        Capacidad:
+            <label>
+                Especificaciones
+            </label>
 
-                        <b>
-                            ${formatoNumero(deposito.cap)}
-                            L
-                        </b>
+            <input
+                type="text"
+                placeholder="Características o especificaciones..."
+                value="${escapar(deposito.especificaciones || "")}"
+                data-especificaciones="${deposito.id}"
+            >
 
-                        ·
+        </div>
 
-                        Tipo:
+    </div>
 
-                        <b>
-
-                            ${
-                                deposito.tipo ===
-                                "fermentador"
-
-                                    ? "Fermentador"
-
-                                    : "Almacenamiento"
-
-                            }
-
-                        </b>
-
-                    </div>
-
-                </div>
+</div>
 
 
 
@@ -1395,6 +1411,35 @@
             return;
 
         }
+
+        /* ---------------------------------------------
+   ESPECIFICACIONES DEL DEPÓSITO
+--------------------------------------------- */
+
+if (
+    elemento.dataset &&
+    elemento.dataset.especificaciones
+) {
+
+    const idDeposito =
+        elemento.dataset.especificaciones;
+
+    const deposito =
+        depositos.find(
+            (d) => d.id === idDeposito
+        );
+
+    if (!deposito) {
+        return;
+    }
+
+    deposito.especificaciones =
+        elemento.value;
+
+    guardar();
+
+    return;
+}
 
 
         /* ---------------------------------------------

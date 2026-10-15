@@ -790,3 +790,57 @@ th {
     border-radius: 14px;
     box-shadow: 0 3px 12px rgba(46, 125, 50, 0.12);
 }
+
+/* =====================================================
+   ESPECIFICACIONES DEL DEPÓSITO
+===================================================== */
+
+.deposit-title-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+}
+
+.deposit-specifications {
+    flex: 1;
+    max-width: 500px;
+}
+
+.deposit-specifications label {
+    display: block;
+    font-size: 0.78rem;
+    font-weight: bold;
+    color: #45604a;
+    margin-bottom: 4px;
+}
+
+.deposit-specifications input {
+    width: 100%;
+    min-height: 38px;
+    padding: 7px 10px;
+    border: 1px solid #a9c5ad;
+    border-radius: 7px;
+    background: white;
+}
+
+.deposit-specifications input:focus {
+    outline: none;
+    border-color: #2e7d32;
+    box-shadow: 0 0 0 2px rgba(46, 125, 50, 0.12);
+}
+
+@media (max-width: 700px) {
+
+    .deposit-title-row {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 12px;
+    }
+
+    .deposit-specifications {
+        max-width: none;
+    }
+
+}
+
