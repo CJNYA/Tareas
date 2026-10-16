@@ -844,3 +844,38 @@ th {
 
 }
 
+/* Procedencias fijas: depósitos 1-23 y auxiliares */
+select[data-campo="procedencia"] option[value="1"],
+select[data-campo="procedencia"] option[value="2"],
+select[data-campo="procedencia"] option[value="3"],
+select[data-campo="procedencia"] option[value="4"],
+select[data-campo="procedencia"] option[value="5"],
+select[data-campo="procedencia"] option[value="6"],
+select[data-campo="procedencia"] option[value="7"],
+select[data-campo="procedencia"] option[value="8"],
+select[data-campo="procedencia"] option[value="9"],
+select[data-campo="procedencia"] option[value="10"],
+select[data-campo="procedencia"] option[value="11"],
+select[data-campo="procedencia"] option[value="12"],
+select[data-campo="procedencia"] option[value="13"],
+select[data-campo="procedencia"] option[value="14"],
+select[data-campo="procedencia"] option[value="15"],
+select[data-campo="procedencia"] option[value="16"],
+select[data-campo="procedencia"] option[value="17"],
+select[data-campo="procedencia"] option[value="18"],
+select[data-campo="procedencia"] option[value="19"],
+select[data-campo="procedencia"] option[value="20"],
+select[data-campo="procedencia"] option[value="21"],
+select[data-campo="procedencia"] option[value="22"],
+select[data-campo="procedencia"] option[value="23"],
+select[data-campo="procedencia"] option[value="Auxiliar 1"],
+select[data-campo="procedencia"] option[value="Auxiliar 2"] {
+    background-color: #d9c891;
+}
+
+/* Barricas y depósitos H */
+select[data-campo="procedencia"] option[value="Barricas"],
+select[data-campo="procedencia"] option[value="H1"],
+select[data-campo="procedencia"] option[value="H2"] {
+    background-color: #e09c9c;
+}

@@ -655,32 +655,35 @@
        17/4
     ===================================================== */
 
-    function obtenerProcedencias() {
+   function obtenerProcedencias() {
+    const lista = [];
 
-        const lista = [];
+    // Fermentadores activos con sus 4 vueltas
+    depositos
+        .filter(
+            (deposito) =>
+                deposito.tipo === "fermentador" &&
+                deposito.activo
+        )
+        .forEach((deposito) => {
+            for (let vuelta = 1; vuelta <= 4; vuelta++) {
+                lista.push(`${deposito.nombre}/${vuelta}`);
+            }
+        });
 
-
-        depositos
-            .filter(
-                (deposito) =>
-                    deposito.tipo === "fermentador"
-            )
-            .forEach((deposito) => {
-
-                for (let vuelta = 1; vuelta <= 4; vuelta++) {
-
-                    lista.push(
-                        `${deposito.nombre}/${vuelta}`
-                    );
-
-                }
-
-            });
-
-
-        return lista;
-
+    // Depósitos y procedencias fijas
+    for (let numero = 1; numero <= 23; numero++) {
+        lista.push(String(numero));
     }
+
+    lista.push("Auxiliar 1");
+    lista.push("Auxiliar 2");
+    lista.push("Barricas");
+    lista.push("H1");
+    lista.push("H2");
+
+    return lista;
+}
 
 
     /* =====================================================
@@ -910,6 +913,9 @@
 
                                     </option>
 
+                                    <option value="Barricas" ${fila.vino === "Barricas" ? "selected" : ""}>Barricas</option>
+                                    <option value="Duelas" ${fila.vino === "Duelas" ? "selected" : ""}>Duelas</option>
+
                                 </select>
 
                             </td>
@@ -1098,7 +1104,7 @@
                                     </th>
 
                                     <th>
-                                        Variedad Uva
+                                        Variedad Uva / Características
                                     </th>
 
                                     <th>
@@ -1712,20 +1718,56 @@ if (
         );
 
 
-        pdf.text(
-            `Capacidad: ${formatoNumero(
-                deposito.cap
-            )} L · Tipo: ${
-                deposito.tipo === "fermentador"
-                    ? "Fermentador"
-                    : "Almacenamiento"
-            }`,
-            margen,
-            y
-        );
+       pdf.text(
+    `Capacidad: ${formatoNumero(
+        deposito.cap
+    )} L · Tipo: ${
+        deposito.tipo === "fermentador"
+            ? "Fermentador"
+            : "Almacenamiento"
+    }`,
+    margen,
+    y
+);
+
+y += 5;
 
 
-        y += 8;
+/* ---------------------------------------------
+   ESPECIFICACIONES
+--------------------------------------------- */
+
+if (deposito.especificaciones) {
+
+    pdf.setFont(
+        "helvetica",
+        "bold"
+    );
+
+    pdf.text(
+        "Especificaciones:",
+        margen,
+        y
+    );
+
+    pdf.setFont(
+        "helvetica",
+        "normal"
+    );
+
+    pdf.text(
+        String(deposito.especificaciones),
+        margen + 30,
+        y
+    );
+
+    y += 8;
+
+} else {
+
+    y += 3;
+
+}
 
 
         /* ---------------------------------------------
@@ -1763,7 +1805,7 @@ if (
             },
 
             {
-                titulo: "Variedad",
+                titulo: "Variedad Uva / Características",
                 ancho: 65
             },
 
@@ -1975,7 +2017,7 @@ if (
         pdf.setFontSize(12);
 
         pdf.text(
-            "Análisis",
+            "Informe de Análisis",
             margen,
             y
         );
