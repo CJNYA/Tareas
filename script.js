@@ -656,33 +656,15 @@
     ===================================================== */
 
     function obtenerProcedencias() {
-function obtenerProcedencias() {
+funcfunction obtenerProcedencias() {
     const lista = [];
-
-    // Fermentadores activos con sus 4 vueltas
     depositos
-        .filter(
-            (deposito) =>
-                deposito.tipo === "fermentador" &&
-                deposito.activo
-        )
+        .filter((deposito) => deposito.tipo === "fermentador")
         .forEach((deposito) => {
             for (let vuelta = 1; vuelta <= 4; vuelta++) {
                 lista.push(`${deposito.nombre}/${vuelta}`);
             }
         });
-
-    // Depósitos y procedencias fijas
-    for (let numero = 1; numero <= 23; numero++) {
-        lista.push(String(numero));
-    }
-
-    lista.push("Auxiliar 1");
-    lista.push("Auxiliar 2");
-    lista.push("Barricas");
-    lista.push("H1");
-    lista.push("H2");
-
     return lista;
 }
 
