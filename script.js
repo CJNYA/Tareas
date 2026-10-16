@@ -656,17 +656,31 @@
     ===================================================== */
 
     function obtenerProcedencias() {
-funcfunction obtenerProcedencias() {
-    const lista = [];
-    depositos
-        .filter((deposito) => deposito.tipo === "fermentador")
-        .forEach((deposito) => {
-            for (let vuelta = 1; vuelta <= 4; vuelta++) {
-                lista.push(`${deposito.nombre}/${vuelta}`);
-            }
-        });
-    return lista;
-}
+
+        const lista = [];
+
+
+        depositos
+            .filter(
+                (deposito) =>
+                    deposito.tipo === "fermentador"
+            )
+            .forEach((deposito) => {
+
+                for (let vuelta = 1; vuelta <= 4; vuelta++) {
+
+                    lista.push(
+                        `${deposito.nombre}/${vuelta}`
+                    );
+
+                }
+
+            });
+
+
+        return lista;
+
+    }
 
 
     /* =====================================================
