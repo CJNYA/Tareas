@@ -1227,70 +1227,90 @@
 
                     <!-- ANÁLISIS -->
 
-                    <div class="analysis">
+<div class="analysis">
+    <h4>
+        Informe de Análisis
+    </h4>
 
-                        <h4>
-                            Informe de Análisis 
-                        </h4>
+    <table>
+        <thead>
+            <tr>
+                <th>Parámetro</th>
+                <th>Análisis 1</th>
+                <th>Análisis 2</th>
+            </tr>
+            <tr>
+                <th>Fecha</th>
 
+                <td>
+                    <input
+                        type="date"
+                        value="${escapar(
+                            deposito.analisis1?.fecha || ""
+                        )}"
+                        data-analisis-fecha="analisis1"
+                        data-deposito="${deposito.id}">
+                </td>
 
-                        <table>
+                <td>
+                    <input
+                        type="date"
+                        value="${escapar(
+                            deposito.analisis2?.fecha || ""
+                        )}"
+                        data-analisis-fecha="analisis2"
+                        data-deposito="${deposito.id}">
+                </td>
+            </tr>
+        </thead>
 
-                            <tbody>
+        <tbody>
 
-                                ${crearCampoAnalisis(
-                                    deposito,
-                                    "glucosa",
-                                    "Glucosa + Fructosa (g/L)"
-                                )}
+            ${crearCampoAnalisis(
+                deposito,
+                "glucosa",
+                "Glucosa + Fructosa (g/L)"
+            )}
 
+            ${crearCampoAnalisis(
+                deposito,
+                "reductores",
+                "Azúcares Reductores (g/L)"
+            )}
 
-                                ${crearCampoAnalisis(
-                                    deposito,
-                                    "reductores",
-                                    "Azúcares Reductores (g/L)"
-                                )}
+            ${crearCampoAnalisis(
+                deposito,
+                "alcohol",
+                "Grado Alcohólico (% Vol)"
+            )}
 
+            ${crearCampoAnalisis(
+                deposito,
+                "ph",
+                "pH (Ud.)"
+            )}
 
-                                ${crearCampoAnalisis(
-                                    deposito,
-                                    "alcohol",
-                                    "Grado Alcohólico (% Vol)"
-                                )}
+            ${crearCampoAnalisis(
+                deposito,
+                "acidez",
+                "Acidez Total (g/L Tartárico)"
+            )}
 
+            ${crearCampoAnalisis(
+                deposito,
+                "acetico",
+                "Ácido Acético (g/L Acético)"
+            )}
 
-                                ${crearCampoAnalisis(
-                                    deposito,
-                                    "ph",
-                                    "pH (Ud.)"
-                                )}
+            ${crearCampoAnalisis(
+                deposito,
+                "malico",
+                "Ácido Málico"
+            )}
 
-
-                                ${crearCampoAnalisis(
-                                    deposito,
-                                    "acidez",
-                                    "Acidez Total (g/L Tartárico)"
-                                )}
-
-
-                                ${crearCampoAnalisis(
-                                    deposito,
-                                    "acetico",
-                                    "Ácido Acético (g/L Acético)"
-                                )}
-
-
-                                ${crearCampoAnalisis(
-                                    deposito,
-                                    "malico",
-                                    "Ácido Málico"
-                                )}
-
-                            </tbody>
-
-                        </table>
-
-                    </div>
+        </tbody>
+    </table>
+</div>
 
                 </div>
 
@@ -1306,50 +1326,53 @@
     ===================================================== */
 
     function crearCampoAnalisis(
-        deposito,
-        clave,
-        titulo
-    ) {
+    function crearCampoAnalisis(
+    deposito,
+    clave,
+    titulo
+) {
 
-        const analisis =
-            deposito.analisis || {};
+    const analisis1 =
+        deposito.analisis1 || {};
 
+    const analisis2 =
+        deposito.analisis2 || {};
 
-        const valor =
-            analisis[clave] || "";
+    const valor1 =
+        analisis1[clave] || "";
 
+    const valor2 =
+        analisis2[clave] || "";
 
-        return `
+    return `
+        <tr>
 
-            <tr>
+            <th>
+                ${titulo}
+            </th>
 
-                <th>
+            <td>
+                <input
+                    type="text"
+                    inputmode="decimal"
+                    value="${escapar(valor1)}"
+                    data-analisis="${clave}"
+                    data-analisis-bloque="analisis1"
+                    data-deposito="${deposito.id}">
+            </td>
 
-                    ${titulo}
+            <td>
+                <input
+                    type="text"
+                    inputmode="decimal"
+                    value="${escapar(valor2)}"
+                    data-analisis="${clave}"
+                    data-analisis-bloque="analisis2"
+                    data-deposito="${deposito.id}">
+            </td>
 
-                </th>
-
-
-                <td>
-
-                    <input
-
-                        type="text"
-
-                        inputmode="decimal"
-
-                        value="${escapar(valor)}"
-
-                        data-analisis="${clave}"
-
-                        data-deposito="${deposito.id}">
-
-                </td>
-
-            </tr>
-
-        `;
-
+        </tr>
+    `;
     }
 
 
