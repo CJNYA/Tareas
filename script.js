@@ -165,7 +165,7 @@
         movimientos = {};
     }
 
-    }
+}
 
 
     /* =====================================================
@@ -1225,7 +1225,7 @@
 
 
 
-                    <!-- ANÁLISIS -->
+                   <!-- ANÁLISIS -->
 
 <div class="analysis">
     <h4>
@@ -1236,8 +1236,8 @@
         <thead>
             <tr>
                 <th>Parámetro</th>
-                <th>Análisis 1</th>
-                <th>Análisis 2</th>
+                <th>Análisis 1 (Antes FM)</th>
+                <th>Análisis 2 (Después FM)</th>
             </tr>
             <tr>
                 <th>Fecha</th>
@@ -1325,7 +1325,7 @@
        CAMPOS DE ANÁLISIS
     ===================================================== */
 
-     function crearCampoAnalisis(
+   function crearCampoAnalisis(
     deposito,
     clave,
     titulo
@@ -1372,7 +1372,7 @@
 
         </tr>
     `;
-    }
+}
 
 
     /* =====================================================
@@ -1513,50 +1513,125 @@ if (
            CAMPO DE ANÁLISIS
         --------------------------------------------- */
 
-        if (
-            elemento.dataset &&
-            elemento.dataset.analisis
-        ) {
+        /* ---------------------------------------------
+   CAMPOS DE ANÁLISIS
+--------------------------------------------- */
 
-            const idDeposito =
-                elemento.dataset.deposito;
+if (
+    elemento.dataset &&
+    elemento.dataset.analisis
+) {
 
+    const idDeposito =
+        elemento.dataset.deposito;
 
-            const clave =
-                elemento.dataset.analisis;
+    const clave =
+        elemento.dataset.analisis;
 
+    const bloque =
+        elemento.dataset.analisisBloque;
 
-            const deposito =
-                depositos.find(
-                    (d) =>
-                        d.id === idDeposito
-                );
+    const deposito =
+        depositos.find(
+            (d) =>
+                d.id === idDeposito
+        );
 
+    if (!deposito) {
+        return;
+    }
 
-            if (!deposito) {
+    // Determinar qué análisis estamos modificando
+    if (bloque === "analisis1") {
 
-                return;
-
-            }
-
-
-            if (!deposito.analisis) {
-
-                deposito.analisis = {};
-
-            }
-
-
-            deposito.analisis[clave] =
-                elemento.value;
-
-
-            guardar();
-
-
-            return;
-
+        if (!deposito.analisis1) {
+            deposito.analisis1 = {
+                fecha: "",
+                glucosa: "",
+                reductores: "",
+                alcohol: "",
+                ph: "",
+                acidez: "",
+                acetico: "",
+                malico: ""
+            };
         }
+
+        deposito.analisis1[clave] =
+            elemento.value;
+
+    } else if (bloque === "analisis2") {
+
+        if (!deposito.analisis2) {
+            deposito.analisis2 = {
+                fecha: "",
+                glucosa: "",
+                reductores: "",
+                alcohol: "",
+                ph: "",
+                acidez: "",
+                acetico: "",
+                malico: ""
+            };
+        }
+
+        deposito.analisis2[clave] =
+            elemento.value;
+    }
+
+    guardar();
+
+    return;
+}
+
+/* ---------------------------------------------
+   FECHA DE ANÁLISIS
+--------------------------------------------- */
+
+if (
+    elemento.dataset &&
+    elemento.dataset.analisisFecha
+) {
+
+    const idDeposito =
+        elemento.dataset.deposito;
+
+    const bloque =
+        elemento.dataset.analisisFecha;
+
+    const deposito =
+        depositos.find(
+            (d) =>
+                d.id === idDeposito
+        );
+
+    if (!deposito) {
+        return;
+    }
+
+    if (bloque === "analisis1") {
+
+        if (!deposito.analisis1) {
+            deposito.analisis1 = {};
+        }
+
+        deposito.analisis1.fecha =
+            elemento.value;
+
+    } else if (bloque === "analisis2") {
+
+        if (!deposito.analisis2) {
+            deposito.analisis2 = {};
+        }
+
+        deposito.analisis2.fecha =
+            elemento.value;
+    }
+
+    guardar();
+
+    return;
+}
 
 
         /* ---------------------------------------------
@@ -1767,27 +1842,58 @@ if (
         y += 7;
 
 
-        /* ---------------------------------------------
-           INFORMACIÓN DEPÓSITO
-        --------------------------------------------- */
+       /* ---------------------------------------------
+   INFORMACIÓN DEPÓSITO
+--------------------------------------------- */
 
-        pdf.setFontSize(9);
+pdf.setFontSize(9);
 
-        pdf.setFont(
-            "helvetica",
-            "normal"
-        );
+/* CAPACIDAD */
+pdf.setFont(
+    "helvetica",
+    "bold"
+);
 
-
-       pdf.text(
-    `Capacidad: ${formatoNumero(
-        deposito.cap
-    )} L · Tipo: ${
-        deposito.tipo === "fermentador"
-            ? "Fermentador"
-            : "Almacenamiento"
-    }`,
+pdf.text(
+    "Capacidad:",
     margen,
+    y
+);
+
+pdf.setFont(
+    "helvetica",
+    "normal"
+);
+
+pdf.text(
+    `${formatoNumero(deposito.cap)} L`,
+    margen + 21,
+    y
+);
+
+
+/* TIPO */
+pdf.setFont(
+    "helvetica",
+    "bold"
+);
+
+pdf.text(
+    "Tipo:",
+    margen + 60,
+    y
+);
+
+pdf.setFont(
+    "helvetica",
+    "normal"
+);
+
+pdf.text(
+    deposito.tipo === "fermentador"
+        ? "Fermentador"
+        : "Almacenamiento",
+    margen + 71,
     y
 );
 
@@ -1798,37 +1904,31 @@ y += 5;
    ESPECIFICACIONES
 --------------------------------------------- */
 
-if (deposito.especificaciones) {
+pdf.setFont(
+    "helvetica",
+    "bold"
+);
 
-    pdf.setFont(
-        "helvetica",
-        "bold"
-    );
+pdf.text(
+    "Especificaciones:",
+    margen,
+    y
+);
 
-    pdf.text(
-        "Especificaciones:",
-        margen,
-        y
-    );
+pdf.setFont(
+    "helvetica",
+    "normal"
+);
 
-    pdf.setFont(
-        "helvetica",
-        "normal"
-    );
+pdf.text(
+    String(
+        deposito.especificaciones || ""
+    ),
+    margen + 32,
+    y
+);
 
-    pdf.text(
-        String(deposito.especificaciones),
-        margen + 30,
-        y
-    );
-
-    y += 8;
-
-} else {
-
-    y += 3;
-
-}
+y += 8;
 
 
         /* ---------------------------------------------
@@ -1886,43 +1986,53 @@ if (deposito.especificaciones) {
         let x = margen;
 
 
-        /* ---------------------------------------------
-           CABECERAS
-        --------------------------------------------- */
+      /* ---------------------------------------------
+   CABECERAS
+--------------------------------------------- */
 
-        pdf.setFontSize(8);
+pdf.setFontSize(8);
 
-        pdf.setFont(
-            "helvetica",
-            "bold"
+pdf.setFont(
+    "helvetica",
+    "bold"
+);
+
+columnas.forEach(
+    (columna) => {
+
+        /* COLOR DE FONDO */
+        pdf.setFillColor(
+            220,
+            239,
+            220
         );
 
-
-        columnas.forEach(
-            (columna) => {
-
-                pdf.rect(
-                    x,
-                    y,
-                    columna.ancho,
-                    altoCabecera
-                );
-
-
-                pdf.text(
-                    columna.titulo,
-                    x + 2,
-                    y + 5
-                );
-
-
-                x += columna.ancho;
-
-            }
+        pdf.rect(
+            x,
+            y,
+            columna.ancho,
+            altoCabecera,
+            "FD"
         );
 
+        pdf.text(
+            columna.titulo,
+            x + 2,
+            y + 5
+        );
 
-        y += altoCabecera;
+        x += columna.ancho;
+    }
+);
+
+/* VOLVER A BLANCO */
+pdf.setFillColor(
+    255,
+    255,
+    255
+);
+
+y += altoCabecera;
 
 
         /* ---------------------------------------------
@@ -1957,7 +2067,7 @@ if (deposito.especificaciones) {
 
                     formatoNumero(
                         fila.litros,
-                        2
+                        0
                     ),
 
                     fila.variedad || "",
@@ -2026,166 +2136,329 @@ if (deposito.especificaciones) {
         );
 
 
+      /* ---------------------------------------------
+   TOTAL
+--------------------------------------------- */
+
+pdf.setFont(
+    "helvetica",
+    "bold"
+);
+
+/* COLOR AZUL CLARO */
+pdf.setFillColor(
+    204,
+    229,
+    255
+);
+
+/* MANTENER EXACTAMENTE
+   LAS MISMAS DIMENSIONES
+   QUE TENÍA LA FILA ORIGINAL */
+
+pdf.rect(
+    margen,
+    y,
+    anchoContenido,
+    8,
+    "FD"
+);
+
+pdf.text(
+    "TOTAL",
+    margen + 2,
+    y + 5
+);
+
+pdf.text(
+    formatoNumero(
+        totalLitros,
+        0
+    ) + " L",
+    margen + 58,
+    y + 5
+);
+
+pdf.text(
+    "100,00 %",
+    margen + 148,
+    y + 5
+);
+
+/* VOLVER A BLANCO */
+pdf.setFillColor(
+    255,
+    255,
+    255
+);
+
+y += 14;
+
+
         /* ---------------------------------------------
-           TOTAL
-        --------------------------------------------- */
+   ANÁLISIS
+--------------------------------------------- */
+
+pdf.setFontSize(12);
+
+pdf.text(
+    "Análisis",
+    margen,
+    y
+);
+
+y += 6;
+
+
+// Obtener los dos análisis
+const analisis1 =
+    deposito.analisis1 || {};
+
+const analisis2 =
+    deposito.analisis2 || {};
+
+
+// Encabezados
+const anchoParametro = 75;
+const anchoAnalisis = 55;
+
+pdf.setFontSize(8);
+
+pdf.setFont(
+    "helvetica",
+    "bold"
+);
+
+
+// Cabecera de la tabla
+
+pdf.setFillColor(
+    220,
+    239,
+    220
+);
+
+pdf.rect(
+    margen,
+    y,
+    anchoParametro,
+    7,
+    "FD"
+);
+
+pdf.rect(
+    margen + anchoParametro,
+    y,
+    anchoAnalisis,
+    7,
+    "FD"
+);
+
+pdf.rect(
+    margen + anchoParametro + anchoAnalisis,
+    y,
+    anchoAnalisis,
+    7,
+    "FD"
+);
+
+pdf.setFont(
+    "helvetica",
+    "bold"
+);
+
+pdf.text(
+    "Parámetro",
+    margen + 2,
+    y + 4.7
+);
+
+pdf.text(
+    "Análisis 1 (Antes FM)",
+    margen + anchoParametro + 2,
+    y + 4.7
+);
+
+pdf.text(
+    "Análisis 2 (Después FM)",
+    margen + anchoParametro + anchoAnalisis + 2,
+    y + 4.7
+);
+
+y += 7;
+
+
+// Fechas
+
+/* COLOR ROJO CLARO */
+pdf.setFillColor(
+    242,
+       204,
+    204
+);
+
+pdf.rect(
+    margen,
+    y,
+    anchoParametro,
+    7,
+    "FD"
+);
+
+pdf.rect(
+    margen + anchoParametro,
+    y,
+    anchoAnalisis,
+    7,
+    "FD"
+);
+
+pdf.rect(
+    margen + anchoParametro + anchoAnalisis,
+    y,
+    anchoAnalisis,
+    7,
+    "FD"
+);
+
+pdf.setFont(
+    "helvetica",
+    "bold"
+);
+
+pdf.text(
+    "Fecha",
+    margen + 2,
+    y + 4.7
+);
+
+pdf.setFont(
+    "helvetica",
+    "normal"
+);
+
+pdf.text(
+    String(
+        analisis1.fecha || ""
+    ),
+    margen + anchoParametro + 2,
+    y + 4.7
+);
+
+pdf.text(
+    String(
+        analisis2.fecha || ""
+    ),
+    margen + anchoParametro + anchoAnalisis + 2,
+    y + 4.7
+);
+
+y += 7;
+
+
+// Parámetros
+
+const campos = [
+    [
+        "Glucosa + Fructosa (g/L)",
+        analisis1.glucosa,
+        analisis2.glucosa
+    ],
+    [
+        "Azúcares Reductores (g/L)",
+        analisis1.reductores,
+        analisis2.reductores
+    ],
+    [
+        "Grado Alcohólico (% Vol)",
+        analisis1.alcohol,
+        analisis2.alcohol
+    ],
+    [
+        "pH (Ud.)",
+        analisis1.ph,
+        analisis2.ph
+    ],
+    [
+        "Acidez Total (g/L Tartárico)",
+        analisis1.acidez,
+        analisis2.acidez
+    ],
+    [
+        "Ácido Acético (g/L Acético)",
+        analisis1.acetico,
+        analisis2.acetico
+    ],
+    [
+        "Ácido Málico",
+        analisis1.malico,
+        analisis2.malico
+    ]
+];
+
+
+campos.forEach(
+    (campo) => {
+
+        pdf.rect(
+            margen,
+            y,
+            anchoParametro,
+            7
+        );
+
+        pdf.rect(
+            margen + anchoParametro,
+            y,
+            anchoAnalisis,
+            7
+        );
+
+        pdf.rect(
+            margen + anchoParametro + anchoAnalisis,
+            y,
+            anchoAnalisis,
+            7
+        );
+
 
         pdf.setFont(
             "helvetica",
             "bold"
         );
 
-
-        pdf.rect(
-            margen,
-            y,
-            anchoContenido,
-            8
-        );
-
-
         pdf.text(
-            "TOTAL",
+            campo[0],
             margen + 2,
-            y + 5
+            y + 4.7
         );
 
+
+        pdf.setFont(
+            "helvetica",
+            "normal"
+        );
 
         pdf.text(
-            formatoNumero(
-                totalLitros,
-                2
-            ) + " L",
-            margen + 55,
-            y + 5
+            String(
+                campo[1] || ""
+            ),
+            margen + anchoParametro + 2,
+            y + 4.7
         );
-
 
         pdf.text(
-            "100,00 %",
-            margen + 145,
-            y + 5
+            String(
+                campo[2] || ""
+            ),
+            margen + anchoParametro + anchoAnalisis + 2,
+            y + 4.7
         );
 
 
-        y += 14;
-
-
-        /* ---------------------------------------------
-           ANÁLISIS
-        --------------------------------------------- */
-
-        pdf.setFontSize(12);
-
-        pdf.text(
-            "Informe de Análisis",
-            margen,
-            y
-        );
-
-
-        y += 6;
-
-
-        const analisis =
-            deposito.analisis || {};
-
-
-        const campos = [
-
-            [
-                "Glucosa + Fructosa (g/L)",
-                analisis.glucosa
-            ],
-
-            [
-                "Azúcares Reductores (g/L)",
-                analisis.reductores
-            ],
-
-            [
-                "Grado Alcohólico (% Vol)",
-                analisis.alcohol
-            ],
-
-            [
-                "pH (Ud.)",
-                analisis.ph
-            ],
-
-            [
-                "Acidez Total (g/L Tartárico)",
-                analisis.acidez
-            ],
-
-            [
-                "Ácido Acético (g/L Acético)",
-                analisis.acetico
-            ],
-
-            [
-                "Ácido Málico",
-                analisis.malico
-            ]
-
-        ];
-
-
-        pdf.setFontSize(8);
-
-
-        campos.forEach(
-            (campo) => {
-
-                pdf.rect(
-                    margen,
-                    y,
-                    93,
-                    7
-                );
-
-
-                pdf.rect(
-                    margen + 93,
-                    y,
-                    93,
-                    7
-                );
-
-
-                pdf.setFont(
-                    "helvetica",
-                    "bold"
-                );
-
-
-                pdf.text(
-                    campo[0],
-                    margen + 2,
-                    y + 4.7
-                );
-
-
-                pdf.setFont(
-                    "helvetica",
-                    "normal"
-                );
-
-
-                pdf.text(
-                    String(
-                        campo[1] || ""
-                    ),
-                    margen + 95,
-                    y + 4.7
-                );
-
-
-                y += 7;
-
-            }
-        );
-
+        y += 7;
+    }
+);
     }
 
 
