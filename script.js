@@ -1305,7 +1305,7 @@
             ${crearCampoAnalisis(
                 deposito,
                 "malico",
-                "Ácido Málico"
+                "Ácido Málico (g/L)"
             )}
 
         </tbody>
@@ -2390,7 +2390,7 @@ const campos = [
         analisis2.acetico
     ],
     [
-        "Ácido Málico",
+        "Ácido Málico (g/L)",
         analisis1.malico,
         analisis2.malico
     ]
