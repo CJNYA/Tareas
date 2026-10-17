@@ -1325,8 +1325,7 @@
        CAMPOS DE ANÁLISIS
     ===================================================== */
 
-    function crearCampoAnalisis(
-    function crearCampoAnalisis(
+     function crearCampoAnalisis(
     deposito,
     clave,
     titulo
