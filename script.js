@@ -101,30 +101,69 @@
 
     function cargar() {
 
-        try {
+    try {
 
-            depositos =
-                JSON.parse(
-                    localStorage.getItem(STORAGE_DEPOSITOS)
-                ) || [];
+        depositos =
+            JSON.parse(
+                localStorage.getItem(STORAGE_DEPOSITOS)
+            ) || [];
 
 
-            movimientos =
-                JSON.parse(
-                    localStorage.getItem(STORAGE_MOVIMIENTOS)
-                ) || {};
+        movimientos =
+            JSON.parse(
+                localStorage.getItem(STORAGE_MOVIMIENTOS)
+            ) || {};
 
-        } catch (error) {
 
-            console.error(
-                "Error cargando los datos:",
-                error
-            );
+        /* ---------------------------------------------
+           PREPARAR ANÁLISIS 1 Y ANÁLISIS 2
+        --------------------------------------------- */
 
-            depositos = [];
+        depositos.forEach((deposito) => {
 
-            movimientos = {};
-        }
+            // Si tiene el análisis antiguo,
+            // lo conservamos como Análisis 1.
+            if (
+                deposito.analisis &&
+                !deposito.analisis1
+            ) {
+
+                deposito.analisis1 = {
+                    ...deposito.analisis,
+                    fecha: ""
+                };
+
+            }
+
+            // Crear Análisis 2 vacío
+            if (!deposito.analisis2) {
+
+                deposito.analisis2 = {
+                    fecha: "",
+                    glucosa: "",
+                    reductores: "",
+                    alcohol: "",
+                    ph: "",
+                    acidez: "",
+                    acetico: "",
+                    malico: ""
+                };
+
+            }
+
+        });
+
+    } catch (error) {
+
+        console.error(
+            "Error cargando los datos:",
+            error
+        );
+
+        depositos = [];
+
+        movimientos = {};
+    }
 
     }
 
