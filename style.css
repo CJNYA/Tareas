@@ -908,3 +908,23 @@ select[data-campo="procedencia"] option[value="H2"] {
 #btn-importar-json:hover {
     background: #E65100;
 }
+
+/* =====================================================
+   NAVEGACIÓN — 2 COLUMNAS EN MÓVIL
+===================================================== */
+
+@media (max-width: 600px) {
+
+    .top-nav {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+    }
+
+    .top-nav .nav-btn,
+    .top-nav .btn {
+        width: 100%;
+        min-width: 0;
+        box-sizing: border-box;
+    }
+}
