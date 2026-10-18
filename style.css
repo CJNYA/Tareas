@@ -910,21 +910,22 @@ select[data-campo="procedencia"] option[value="H2"] {
 }
 
 /* =====================================================
-   NAVEGACIÓN — 2 COLUMNAS EN MÓVIL
+   NAVEGACIÓN MÓVIL — 2 BOTONES POR FILA
 ===================================================== */
 
-@media (max-width: 600px) {
+@media screen and (max-width: 600px) {
 
-    .top-nav {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 8px;
+    nav.top-nav {
+        display: grid !important;
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+        gap: 8px !important;
+        width: 100%;
     }
 
-    .top-nav .nav-btn,
-    .top-nav .btn {
-        width: 100%;
-        min-width: 0;
+    nav.top-nav > button {
+        width: 100% !important;
+        min-width: 0 !important;
+        max-width: none !important;
         box-sizing: border-box;
     }
 }
