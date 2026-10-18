@@ -884,3 +884,27 @@ select[data-campo="procedencia"] option[value="H1"],
 select[data-campo="procedencia"] option[value="H2"] {
     background-color: #e09c9c;
 }
+
+/* =====================================================
+   BOTONES EXPORTAR / IMPORTAR JSON
+===================================================== */
+
+#btn-exportar-json {
+    background: #1976D2;
+    color: white;
+    border: 1px solid #1565C0;
+}
+
+#btn-exportar-json:hover {
+    background: #1565C0;
+}
+
+#btn-importar-json {
+    background: #EF6C00;
+    color: white;
+    border: 1px solid #E65100;
+}
+
+#btn-importar-json:hover {
+    background: #E65100;
+}

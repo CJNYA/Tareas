@@ -146,7 +146,8 @@
                     ph: "",
                     acidez: "",
                     acetico: "",
-                    malico: ""
+                    malico: "",
+                    sulfurosoLibre: ""
                 };
 
             }
@@ -1308,6 +1309,12 @@
                 "Ácido Málico (g/L)"
             )}
 
+            ${crearCampoAnalisis(
+                deposito,
+                "sulfurosoLibre",
+                "Sulfuroso Libre (mg/L)"
+)}
+
         </tbody>
     </table>
 </div>
@@ -1553,7 +1560,8 @@ if (
                 ph: "",
                 acidez: "",
                 acetico: "",
-                malico: ""
+                malico: "",
+                sulfurosoLibre: ""
             };
         }
 
@@ -1571,7 +1579,8 @@ if (
                 ph: "",
                 acidez: "",
                 acetico: "",
-                malico: ""
+                malico: "",
+                sulfurosoLibre: ""
             };
         }
 
@@ -2393,6 +2402,12 @@ const campos = [
         "Ácido Málico (g/L)",
         analisis1.malico,
         analisis2.malico
+    ],
+
+    [
+    "Sulfuroso Libre (mg/L)",
+    analisis1.sulfurosoLibre,
+    analisis2.sulfurosoLibre
     ]
 ];
 
@@ -2569,6 +2584,23 @@ campos.forEach(
             exportarPDF
         );
 
+        $("btn-exportar-json").addEventListener(
+    "click",
+    exportarJSON
+);
+
+$("btn-importar-json").addEventListener(
+    "click",
+    function () {
+        $("input-importar-json").click();
+    }
+);
+
+$("input-importar-json").addEventListener(
+    "change",
+    importarJSON
+);
+
     }
 
 
@@ -2596,3 +2628,163 @@ campos.forEach(
 
 
 })();
+
+        /* ---------------------------------------------
+           EXPORTAR JSON
+        --------------------------------------------- */
+
+        function exportarJSON() {
+
+            const copia = {
+                version: 1,
+                fecha: new Date().toISOString(),
+                depositos: depositos,
+                movimientos: movimientos
+            };
+
+            const contenido =
+                JSON.stringify(
+                    copia,
+                    null,
+                    2
+                );
+
+            const blob =
+                new Blob(
+                    [contenido],
+                    {
+                        type: "application/json"
+                    }
+                );
+
+            const enlace =
+                document.createElement("a");
+
+            enlace.href =
+                URL.createObjectURL(blob);
+
+            enlace.download =
+                "Copia_Seguridad_Depositos.json";
+
+            document.body.appendChild(
+                enlace
+            );
+
+            enlace.click();
+
+            document.body.removeChild(
+                enlace
+            );
+
+            URL.revokeObjectURL(
+                enlace.href
+            );
+        }
+
+
+        /* ---------------------------------------------
+           IMPORTAR JSON
+        --------------------------------------------- */
+
+        function importarJSON(evento) {
+
+            const archivo =
+                evento.target.files[0];
+
+            if (!archivo) {
+                return;
+            }
+
+            const lector =
+                new FileReader();
+
+            lector.onload =
+                function () {
+
+                    try {
+
+                        const copia =
+                            JSON.parse(
+                                lector.result
+                            );
+
+                        if (
+                            !copia ||
+                            !Array.isArray(
+                                copia.depositos
+                            ) ||
+                            typeof copia.movimientos !==
+                                "object"
+                        ) {
+
+                            throw new Error(
+                                "El archivo no tiene un formato de copia de seguridad válido."
+                            );
+                        }
+
+                        const confirmar =
+                            confirm(
+                                "Se va a restaurar la copia de seguridad.\n\n" +
+                                `Depósitos: ${copia.depositos.length}\n\n` +
+                                "Los datos actuales del programa serán sustituidos.\n\n" +
+                                "¿Quieres continuar?"
+                            );
+
+                        if (!confirmar) {
+                            evento.target.value =
+                                "";
+                            return;
+                        }
+
+                        depositos =
+                            copia.depositos;
+
+                        movimientos =
+                            copia.movimientos;
+
+                        guardar();
+
+                        renderizarDepositos();
+
+                        renderizarMovimientos();
+
+                        alert(
+                            "Copia de seguridad restaurada correctamente."
+                        );
+
+                    }
+                    catch (error) {
+
+                        console.error(
+                            "Error importando JSON:",
+                            error
+                        );
+
+                        alert(
+                            "No se pudo importar la copia de seguridad.\n\n" +
+                            error.message
+                        );
+                    }
+
+                    evento.target.value =
+                        "";
+                };
+
+
+            lector.onerror =
+                function () {
+
+                    alert(
+                        "No se pudo leer el archivo JSON."
+                    );
+
+                    evento.target.value =
+                        "";
+                };
+
+
+            lector.readAsText(
+                archivo,
+                "UTF-8"
+            );
+        }
