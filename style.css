@@ -929,3 +929,121 @@ select[data-campo="procedencia"] option[value="H2"] {
         box-sizing: border-box;
     }
 }
+
+/* =====================================================
+   TOTALES DE VINO — DISEÑO RESPONSIVE
+===================================================== */
+
+.totales-vinos {
+    width: 100%;
+    box-sizing: border-box;
+    margin: 16px 0 22px;
+    padding: 16px;
+    background: #f1f6f9;
+    border: 1px solid #cbdce7;
+    border-radius: 14px;
+    box-shadow: 0 3px 10px rgba(30, 60, 80, 0.08);
+}
+
+/* Título */
+.totales-vinos h3 {
+    margin: 0 0 14px;
+    padding-bottom: 10px;
+    color: #243b53;
+    font-size: 18px;
+    font-weight: 700;
+    border-bottom: 2px solid #d2e2ed;
+}
+
+/* Cuadrícula de totales */
+.totales-vinos-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px;
+}
+
+/* Tarjeta individual */
+.total-vino {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-width: 0;
+    box-sizing: border-box;
+    padding: 14px 8px;
+    background: #ffffff;
+    border: 1px solid #d6e1e8;
+    border-radius: 10px;
+    text-align: center;
+}
+
+/* Nombre del vino */
+.total-vino span {
+    color: #526579;
+    font-size: 13px;
+    font-weight: 600;
+    overflow-wrap: anywhere;
+}
+
+/* Litros */
+.total-vino strong {
+    color: #176b45;
+    font-size: 19px;
+    font-weight: 800;
+    line-height: 1.2;
+    overflow-wrap: anywhere;
+    font-variant-numeric: tabular-nums;
+}
+
+/* =====================================================
+   MÓVIL — DOS COLUMNAS
+===================================================== */
+
+@media screen and (max-width: 600px) {
+
+    .totales-vinos {
+        margin: 12px 0 18px;
+        padding: 12px;
+        border-radius: 12px;
+    }
+
+    .totales-vinos h3 {
+        font-size: 16px;
+        margin-bottom: 10px;
+    }
+
+    .totales-vinos-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 8px;
+    }
+
+    .total-vino {
+        padding: 12px 5px;
+        gap: 7px;
+    }
+
+    .total-vino span {
+        font-size: 12px;
+    }
+
+    .total-vino strong {
+        font-size: 17px;
+    }
+}
+
+/* Pantallas muy estrechas */
+@media screen and (max-width: 350px) {
+
+    .totales-vinos {
+        padding: 9px;
+    }
+
+    .totales-vinos-grid {
+        gap: 6px;
+    }
+
+    .total-vino strong {
+        font-size: 15px;
+    }
+}

@@ -807,7 +807,73 @@
                 )
                 .join("");
 
+                actualizarTotalesVino();
+
     }
+
+
+/* =====================================================
+   TOTALES DE VINOS
+===================================================== */
+
+function actualizarTotalesVino() {
+
+    const totales = {
+        "Yema": 0,
+        "Prensa": 0,
+        "pH": 0,
+        "Barricas": 0,
+        "Duelas": 0,
+        "Joven": 0
+    };
+
+    /* Recorrer todos los depósitos */
+    Object.values(movimientos).forEach(lista => {
+
+        if (!Array.isArray(lista)) {
+            return;
+        }
+
+        lista.forEach(movimiento => {
+
+            const vino = movimiento.vino;
+
+            const litros =
+                parseFloat(movimiento.litros) || 0;
+
+            if (
+                Object.prototype.hasOwnProperty.call(
+                    totales,
+                    vino
+                )
+            ) {
+                totales[vino] += litros;
+            }
+
+        });
+
+    });
+
+    /* Mostrar los resultados */
+
+    $("total-yema").textContent =
+        formatoNumero(totales.Yema, 0) + " L";
+
+    $("total-prensa").textContent =
+        formatoNumero(totales.Prensa, 0) + " L";
+
+    $("total-pH").textContent =
+        formatoNumero(totales.pH, 0) + " L";
+
+    $("total-barricas").textContent =
+        formatoNumero(totales.Barricas, 0) + " L";
+
+    $("total-duelas").textContent =
+        formatoNumero(totales.Duelas, 0) + " L";
+
+    $("total-joven").textContent =
+        formatoNumero(totales.Joven, 0) + " L";
+}
 
 
     /* =====================================================
@@ -955,6 +1021,7 @@
 
                                     <option value="Barricas" ${fila.vino === "Barricas" ? "selected" : ""}>Barricas</option>
                                     <option value="Duelas" ${fila.vino === "Duelas" ? "selected" : ""}>Duelas</option>
+                                    <option value="Joven" ${fila.vino === "Joven" ? "selected" : ""}>Joven</option>
 
                                 </select>
 
@@ -2476,160 +2543,7 @@ campos.forEach(
 );
     }
 
-
-    /* =====================================================
-       INICIALIZACIÓN
-    ===================================================== */
-
-    function iniciar() {
-
-        cargar();
-
-
-        renderizarDepositos();
-
-
-        renderizarMovimientos();
-
-
-        configurarNavegacion();
-
-
-        /* ---------------------------------------------
-           NUEVO DEPÓSITO
-        --------------------------------------------- */
-
-        $("nuevo").addEventListener(
-            "click",
-            () => {
-
-                abrirModal();
-
-            }
-        );
-
-
-        /* ---------------------------------------------
-           CERRAR MODAL
-        --------------------------------------------- */
-
-        $("cerrar").addEventListener(
-            "click",
-            cerrarModal
-        );
-
-
-        $("cancelar").addEventListener(
-            "click",
-            cerrarModal
-        );
-
-
-        document
-            .querySelector(".modal-background")
-            .addEventListener(
-                "click",
-                cerrarModal
-            );
-
-
-        /* ---------------------------------------------
-           FORMULARIO
-        --------------------------------------------- */
-
-        $("form").addEventListener(
-            "submit",
-            guardarDeposito
-        );
-
-
-        /* ---------------------------------------------
-           ACCIONES DEPÓSITOS
-        --------------------------------------------- */
-
-        $("depBody").addEventListener(
-            "click",
-            accionesDepositos
-        );
-
-
-        /* ---------------------------------------------
-           MOVIMIENTOS
-        --------------------------------------------- */
-
-        $("movBody").addEventListener(
-            "click",
-            manejarMovimientos
-        );
-
-
-        $("movBody").addEventListener(
-            "input",
-            manejarMovimientos
-        );
-
-
-        $("movBody").addEventListener(
-            "change",
-            manejarMovimientos
-        );
-
-
-        /* ---------------------------------------------
-           EXPORTAR PDF
-        --------------------------------------------- */
-
-        $("pdf").addEventListener(
-            "click",
-            exportarPDF
-        );
-
-        $("btn-exportar-json").addEventListener(
-    "click",
-    exportarJSON
-);
-
-$("btn-importar-json").addEventListener(
-    "click",
-    function () {
-        $("input-importar-json").click();
-    }
-);
-
-$("input-importar-json").addEventListener(
-    "change",
-    importarJSON
-);
-
-    }
-
-
-    /* =====================================================
-       ARRANQUE
-    ===================================================== */
-
-    if (
-        document.readyState ===
-        "loading"
-    ) {
-
-        document.addEventListener(
-            "DOMContentLoaded",
-            iniciar
-        );
-
-    }
-
-    else {
-
-        iniciar();
-
-    }
-
-
-})();
-
-        /* ---------------------------------------------
+    /* ---------------------------------------------
            EXPORTAR JSON
         --------------------------------------------- */
 
@@ -2788,3 +2702,164 @@ $("input-importar-json").addEventListener(
                 "UTF-8"
             );
         }
+
+
+    /* =====================================================
+       INICIALIZACIÓN
+    ===================================================== */
+
+    function iniciar() {
+
+        cargar();
+
+
+        renderizarDepositos();
+
+
+        renderizarMovimientos();
+
+
+        configurarNavegacion();
+
+
+        /* ---------------------------------------------
+           NUEVO DEPÓSITO
+        --------------------------------------------- */
+
+        $("nuevo").addEventListener(
+            "click",
+            () => {
+
+                abrirModal();
+
+            }
+        );
+
+
+        /* ---------------------------------------------
+           CERRAR MODAL
+        --------------------------------------------- */
+
+        $("cerrar").addEventListener(
+            "click",
+            cerrarModal
+        );
+
+
+        $("cancelar").addEventListener(
+            "click",
+            cerrarModal
+        );
+
+
+        document
+            .querySelector(".modal-background")
+            .addEventListener(
+                "click",
+                cerrarModal
+            );
+
+
+        /* ---------------------------------------------
+           FORMULARIO
+        --------------------------------------------- */
+
+        $("form").addEventListener(
+            "submit",
+            guardarDeposito
+        );
+
+
+        /* ---------------------------------------------
+           ACCIONES DEPÓSITOS
+        --------------------------------------------- */
+
+        $("depBody").addEventListener(
+            "click",
+            accionesDepositos
+        );
+
+
+        /* ---------------------------------------------
+           MOVIMIENTOS
+        --------------------------------------------- */
+
+        $("movBody").addEventListener(
+            "click",
+            manejarMovimientos
+        );
+
+
+        $("movBody").addEventListener(
+            "input",
+            manejarMovimientos
+        );
+
+
+       
+$("movBody").addEventListener(
+    "change",
+    function (evento) {
+
+        manejarMovimientos(evento);
+
+        actualizarTotalesVino();
+    }
+);
+
+
+        /* ---------------------------------------------
+           EXPORTAR PDF
+        --------------------------------------------- */
+
+        $("pdf").addEventListener(
+            "click",
+            exportarPDF
+        );
+
+        $("btn-exportar-json").addEventListener(
+    "click",
+    exportarJSON
+);
+
+$("btn-importar-json").addEventListener(
+    "click",
+    function () {
+        $("input-importar-json").click();
+    }
+);
+
+$("input-importar-json").addEventListener(
+    "change",
+    importarJSON
+);
+
+    }
+
+
+    /* =====================================================
+       ARRANQUE
+    ===================================================== */
+
+    if (
+        document.readyState ===
+        "loading"
+    ) {
+
+        document.addEventListener(
+            "DOMContentLoaded",
+            iniciar
+        );
+
+    }
+
+    else {
+
+        iniciar();
+
+    }
+
+
+})();
+
+        
