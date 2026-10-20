@@ -1205,3 +1205,18 @@ select[data-campo="procedencia"] option[value="H2"] {
     }
 
 }
+
+/* =====================================================
+   BOTÓN PDF Y TOTALES — VERTICAL EN ORDENADOR
+   ===================================================== */
+
+.page-heading {
+    flex-wrap: wrap;
+}
+
+.page-heading .totales-vinos {
+    flex: 0 0 100%;
+    width: 100%;
+    max-width: 100%;
+}
+

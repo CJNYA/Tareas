@@ -954,28 +954,28 @@ function actualizarTotalesVino() {
                         </div>
 
                         <div class="total-vino">
-                            <span>🟤 Prensa</span>
+                            <span>🍇 Prensa</span>
                             <strong>
                                 ${formatoNumero(totales.Prensa, 0)} L
                             </strong>
                         </div>
 
                         <div class="total-vino">
-                            <span>🟢 pH</span>
+                            <span>🧪 pH</span>
                             <strong>
                                 ${formatoNumero(totales.pH, 0)} L
                             </strong>
                         </div>
 
                         <div class="total-vino">
-                            <span>🟠 Barricas</span>
+                            <span>🪵 Barricas</span>
                             <strong>
                                 ${formatoNumero(totales.Barricas, 0)} L
                             </strong>
                         </div>
 
                         <div class="total-vino">
-                            <span>🟣 Duelas</span>
+                            <span>🪵 Duelas</span>
                             <strong>
                                 ${formatoNumero(totales.Duelas, 0)} L
                             </strong>
@@ -1951,69 +1951,136 @@ if (
 
     function exportarPDF() {
 
-        if (!window.jspdf) {
+    if (!window.jspdf) {
 
-            alert(
-                "No se pudo cargar la librería PDF. " +
-                "Comprueba la conexión a Internet y vuelve a intentarlo."
+        alert(
+            "No se pudo cargar la librería PDF. " +
+            "Comprueba la conexión a Internet y vuelve a intentarlo."
+        );
+
+        return;
+    }
+
+    const activos =
+        depositos.filter(
+            (deposito) =>
+                deposito.activo
+        );
+
+    if (!activos.length) {
+
+        alert(
+            "No hay depósitos activos para exportar."
+        );
+
+        return;
+    }
+
+    const {
+        jsPDF
+    } = window.jspdf;
+
+    const pdf =
+        new jsPDF();
+
+    activos.forEach(
+        (deposito, indice) => {
+
+            if (indice > 0) {
+
+                pdf.addPage();
+
+            }
+
+            crearPaginaPDF(
+                pdf,
+                deposito,
+                indice === 0
             );
-
-            return;
 
         }
+    );
 
+    pdf.save(
+        "Informe_Depositos.pdf"
+    );
 
-        const activos =
-            depositos.filter(
-                (deposito) =>
-                    deposito.activo
-            );
+}
 
+/* =====================================================
+   TOTALES DE VINO POR AÑADA PARA PDF
+   ===================================================== */
 
-        if (!activos.length) {
+function obtenerTotalesVinoPorAnadaPDF() {
 
-            alert(
-                "No hay depósitos activos para exportar."
-            );
+    const totales = {};
 
-            return;
+    const tiposVino = [
+        "Yema",
+        "Prensa",
+        "pH",
+        "Barricas",
+        "Duelas",
+        "Joven"
+    ];
 
-        }
+    depositos
+        .filter(deposito => deposito.activo)
+        .forEach(deposito => {
 
+            const filas = obtenerMovimientos(deposito);
 
-        const {
-            jsPDF
-        } = window.jspdf;
+            filas.forEach(fila => {
 
+                const anada =
+                    fila.anada !== undefined &&
+                    fila.anada !== null &&
+                    String(fila.anada).trim() !== ""
+                        ? String(fila.anada).trim()
+                        : "Sin añada";
 
-        const pdf =
-            new jsPDF();
+                const vino = fila.vino;
 
+                if (!tiposVino.includes(vino)) {
+                    return;
+                }
 
-        activos.forEach(
-            (deposito, indice) => {
+                if (!totales[anada]) {
 
-                if (indice > 0) {
-
-                    pdf.addPage();
+                    totales[anada] = {
+                        Yema: 0,
+                        Prensa: 0,
+                        pH: 0,
+                        Barricas: 0,
+                        Duelas: 0,
+                        Joven: 0
+                    };
 
                 }
 
+                totales[anada][vino] += numero(fila.litros);
 
-                crearPaginaPDF(
-                    pdf,
-                    deposito
-                );
+            });
 
-            }
-        );
+        });
 
+    const anadas = Object.keys(totales);
 
-        pdf.save(
-            "Informe_Depositos.pdf"
-        );
+    anadas.sort((a, b) => {
 
-    }
+        if (a === "Sin añada") return 1;
+        if (b === "Sin añada") return -1;
+
+        return Number(b) - Number(a);
+
+    });
+
+    return {
+        totales,
+        anadas
+    };
+
+}
 
 
     /* =====================================================
@@ -2021,9 +2088,10 @@ if (
     ===================================================== */
 
     function crearPaginaPDF(
-        pdf,
-        deposito
-    ) {
+    pdf,
+    deposito,
+    esPrimeraPagina = false
+) {
 
         const margen = 12;
 
@@ -2035,6 +2103,199 @@ if (
 
 
         let y = 15;
+
+        /* ---------------------------------------------
+   TOTALES DE VINO POR AÑADA
+   SOLO EN LA PRIMERA PÁGINA
+--------------------------------------------- */
+
+if (esPrimeraPagina) {
+
+    const datosAnadas =
+        obtenerTotalesVinoPorAnadaPDF();
+
+    const totalesAnada =
+        datosAnadas.totales;
+
+    const anadas =
+        datosAnadas.anadas;
+
+    if (anadas.length > 0) {
+
+        pdf.setFontSize(12);
+
+        pdf.setFont(
+            "helvetica",
+            "bold"
+        );
+
+        pdf.text(
+            "TOTALES DE VINO POR AÑADA",
+            margen,
+            y
+        );
+
+        y += 6;
+
+        const columnasAnada = [
+            {
+                titulo: "Añada",
+                ancho: 28
+            },
+            {
+                titulo: "Yema",
+                ancho: 25
+            },
+            {
+                titulo: "Prensa",
+                ancho: 25
+            },
+            {
+                titulo: "pH",
+                ancho: 22
+            },
+            {
+                titulo: "Barricas",
+                ancho: 28
+            },
+            {
+                titulo: "Duelas",
+                ancho: 28
+            },
+            {
+                titulo: "Joven",
+                ancho: 28
+            }
+        ];
+
+        const altoCabeceraAnada = 7;
+        const altoFilaAnada = 6;
+
+        let xAnada = margen;
+
+        pdf.setFontSize(7);
+
+        pdf.setFont(
+            "helvetica",
+            "bold"
+        );
+
+        /* CABECERA */
+
+        columnasAnada.forEach(
+            (columna) => {
+
+                pdf.setFillColor(
+                    220,
+                    239,
+                    220
+                );
+
+                pdf.rect(
+                    xAnada,
+                    y,
+                    columna.ancho,
+                    altoCabeceraAnada,
+                    "FD"
+                );
+
+                pdf.text(
+                    columna.titulo,
+                    xAnada + 2,
+                    y + 4.5
+                );
+
+                xAnada += columna.ancho;
+
+            }
+        );
+
+        y += altoCabeceraAnada;
+
+        /* FILAS */
+
+        pdf.setFont(
+            "helvetica",
+            "normal"
+        );
+
+        anadas.forEach(
+            (anada) => {
+
+                xAnada = margen;
+
+                const datos =
+                    totalesAnada[anada];
+
+                const valoresAnada = [
+
+                    anada,
+
+                    formatoNumero(
+                        datos.Yema,
+                        0
+                    ) + " L",
+
+                    formatoNumero(
+                        datos.Prensa,
+                        0
+                    ) + " L",
+
+                    formatoNumero(
+                        datos.pH,
+                        0
+                    ) + " L",
+
+                    formatoNumero(
+                        datos.Barricas,
+                        0
+                    ) + " L",
+
+                    formatoNumero(
+                        datos.Duelas,
+                        0
+                    ) + " L",
+
+                    formatoNumero(
+                        datos.Joven,
+                        0
+                    ) + " L"
+
+                ];
+
+                columnasAnada.forEach(
+                    (columna, indice) => {
+
+                        pdf.rect(
+                            xAnada,
+                            y,
+                            columna.ancho,
+                            altoFilaAnada
+                        );
+
+                        pdf.text(
+                            String(
+                                valoresAnada[indice] || ""
+                            ),
+                            xAnada + 2,
+                            y + 4.2
+                        );
+
+                        xAnada += columna.ancho;
+
+                    }
+                );
+
+                y += altoFilaAnada;
+
+            }
+        );
+
+        y += 6;
+
+    }
+
+}
 
 
         /* ---------------------------------------------
@@ -2058,6 +2319,8 @@ if (
 
 
         y += 7;
+
+        
 
 
        /* ---------------------------------------------
@@ -2168,32 +2431,37 @@ y += 8;
 
         const columnas = [
 
-            {
-                titulo: "Procedencia",
-                ancho: 32
-            },
+    {
+        titulo: "Procedencia",
+        ancho: 30
+    },
 
-            {
-                titulo: "Vino",
-                ancho: 24
-            },
+    {
+        titulo: "Vino",
+        ancho: 22
+    },
 
-            {
-                titulo: "Litros",
-                ancho: 25
-            },
+    {
+        titulo: "Litros",
+        ancho: 22
+    },
 
-            {
-                titulo: "Variedad Uva / Características",
-                ancho: 65
-            },
+    {
+        titulo: "Añada",
+        ancho: 20
+    },
 
-            {
-                titulo: "%",
-                ancho: 40
-            }
+    {
+        titulo: "Variedad Uva / Características",
+        ancho: 52
+    },
 
-        ];
+    {
+        titulo: "%",
+        ancho: 40
+    }
+
+];
 
 
         const altoCabecera = 8;
@@ -2277,25 +2545,27 @@ y += altoCabecera;
                         : 0;
 
 
-                const valores = [
+               const valores = [
 
-                    fila.procedencia || "",
+    fila.procedencia || "",
 
-                    fila.vino || "",
+    fila.vino || "",
 
-                    formatoNumero(
-                        fila.litros,
-                        0
-                    ),
+    formatoNumero(
+        fila.litros,
+        0
+    ),
 
-                    fila.variedad || "",
+    fila.anada || "",
 
-                    formatoNumero(
-                        porcentaje,
-                        2
-                    ) + " %"
+    fila.variedad || "",
 
-                ];
+    formatoNumero(
+        porcentaje,
+        2
+    ) + " %"
+
+];
 
 
                 columnas.forEach(
@@ -2393,13 +2663,13 @@ pdf.text(
         totalLitros,
         0
     ) + " L",
-    margen + 58,
+    margen + 54,
     y + 5
 );
 
 pdf.text(
     "100,00 %",
-    margen + 148,
+    margen + 146,
     y + 5
 );
 
@@ -2556,17 +2826,17 @@ pdf.setFont(
 );
 
 pdf.text(
-    String(
-        analisis1.fecha || ""
-    ),
+    analisis1.fecha
+        ? analisis1.fecha.split("-").reverse().join("/")
+        : "",
     margen + anchoParametro + 2,
     y + 4.7
 );
 
 pdf.text(
-    String(
-        analisis2.fecha || ""
-    ),
+    analisis2.fecha
+        ? analisis2.fecha.split("-").reverse().join("/")
+        : "",
     margen + anchoParametro + anchoAnalisis + 2,
     y + 4.7
 );
