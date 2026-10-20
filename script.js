@@ -818,16 +818,12 @@
 
 function actualizarTotalesVino() {
 
-    const totales = {
-        "Yema": 0,
-        "Prensa": 0,
-        "pH": 0,
-        "Barricas": 0,
-        "Duelas": 0,
-        "Joven": 0
-    };
+    const totalesPorAnada = {};
 
-    /* Recorrer todos los depósitos */
+    /* ==========================================
+       RECORRER TODOS LOS MOVIMIENTOS
+       ========================================== */
+
     Object.values(movimientos).forEach(lista => {
 
         if (!Array.isArray(lista)) {
@@ -837,42 +833,167 @@ function actualizarTotalesVino() {
         lista.forEach(movimiento => {
 
             const vino = movimiento.vino;
-
             const litros =
                 parseFloat(movimiento.litros) || 0;
 
+            if (!litros || !vino) {
+                return;
+            }
+
+            /*
+             * Si no hay añada, se agrupa como
+             * "Sin añada"
+             */
+            const anada =
+                movimiento.anada !== undefined &&
+                movimiento.anada !== null &&
+                String(movimiento.anada).trim() !== ""
+                    ? String(movimiento.anada).trim()
+                    : "Sin añada";
+
+            /*
+             * Crear la añada si todavía no existe
+             */
+            if (!totalesPorAnada[anada]) {
+
+                totalesPorAnada[anada] = {
+                    "Yema": 0,
+                    "Prensa": 0,
+                    "pH": 0,
+                    "Barricas": 0,
+                    "Duelas": 0,
+                    "Joven": 0
+                };
+            }
+
+            /*
+             * Sumar los litros al vino
+             * correspondiente de esa añada
+             */
             if (
                 Object.prototype.hasOwnProperty.call(
-                    totales,
+                    totalesPorAnada[anada],
                     vino
                 )
             ) {
-                totales[vino] += litros;
+
+                totalesPorAnada[anada][vino] += litros;
             }
 
         });
 
     });
 
-    /* Mostrar los resultados */
 
-    $("total-yema").textContent =
-        formatoNumero(totales.Yema, 0) + " L";
+    /* ==========================================
+       ORDENAR LAS AÑADAS
+       ========================================== */
 
-    $("total-prensa").textContent =
-        formatoNumero(totales.Prensa, 0) + " L";
+    const anadasOrdenadas =
+        Object.keys(totalesPorAnada).sort((a, b) => {
 
-    $("total-pH").textContent =
-        formatoNumero(totales.pH, 0) + " L";
+            if (a === "Sin añada") return 1;
+            if (b === "Sin añada") return -1;
 
-    $("total-barricas").textContent =
-        formatoNumero(totales.Barricas, 0) + " L";
+            return Number(b) - Number(a);
+        });
 
-    $("total-duelas").textContent =
-        formatoNumero(totales.Duelas, 0) + " L";
 
-    $("total-joven").textContent =
-        formatoNumero(totales.Joven, 0) + " L";
+    /* ==========================================
+       CONTENEDOR
+       ========================================== */
+
+    const contenedor =
+        $("totales-vinos-contenido");
+
+    if (!contenedor) {
+        return;
+    }
+
+
+    /* ==========================================
+       SI NO HAY MOVIMIENTOS
+       ========================================== */
+
+    if (!anadasOrdenadas.length) {
+
+        contenedor.innerHTML = `
+            <div class="totales-vinos-vacio">
+                No hay movimientos con litros registrados.
+            </div>
+        `;
+
+        return;
+    }
+
+
+    /* ==========================================
+       CREAR TARJETAS DE CADA AÑADA
+       ========================================== */
+
+    contenedor.innerHTML =
+        anadasOrdenadas.map(anada => {
+
+            const totales =
+                totalesPorAnada[anada];
+
+            return `
+                <div class="total-anada">
+
+                    <div class="total-anada-titulo">
+                        Añada ${escapar(anada)}
+                    </div>
+
+                    <div class="total-anada-grid">
+
+                        <div class="total-vino">
+                            <span>🍇 Yema</span>
+                            <strong>
+                                ${formatoNumero(totales.Yema, 0)} L
+                            </strong>
+                        </div>
+
+                        <div class="total-vino">
+                            <span>🟤 Prensa</span>
+                            <strong>
+                                ${formatoNumero(totales.Prensa, 0)} L
+                            </strong>
+                        </div>
+
+                        <div class="total-vino">
+                            <span>🟢 pH</span>
+                            <strong>
+                                ${formatoNumero(totales.pH, 0)} L
+                            </strong>
+                        </div>
+
+                        <div class="total-vino">
+                            <span>🟠 Barricas</span>
+                            <strong>
+                                ${formatoNumero(totales.Barricas, 0)} L
+                            </strong>
+                        </div>
+
+                        <div class="total-vino">
+                            <span>🟣 Duelas</span>
+                            <strong>
+                                ${formatoNumero(totales.Duelas, 0)} L
+                            </strong>
+                        </div>
+
+                        <div class="total-vino">
+                            <span>🍷 Joven</span>
+                            <strong>
+                                ${formatoNumero(totales.Joven, 0)} L
+                            </strong>
+                        </div>
+
+                    </div>
+
+                </div>
+            `;
+
+        }).join("");
 }
 
 
@@ -908,7 +1029,7 @@ function actualizarTotalesVino() {
                 <tr>
 
                     <td
-                        colspan="6"
+                        colspan="7"
                         style="
                             text-align:center;
                             color:#68757b;
@@ -1051,6 +1172,21 @@ function actualizarTotalesVino() {
                                     data-fila="${fila.id}">
 
                             </td>
+
+                            <!-- AÑADA -->
+                            <td>
+    <input
+        type="number"
+        min="1900"
+        max="2100"
+        step="1"
+        value="${fila.anada || ""}"
+        placeholder="Añada"
+        inputmode="numeric"
+        data-campo="anada"
+        data-deposito="${deposito.id}"
+        data-fila="${fila.id}">
+                           </td>
 
 
                             <!-- VARIEDAD -->
@@ -1208,6 +1344,10 @@ function actualizarTotalesVino() {
 
                                     <th>
                                         Litros
+                                    </th>
+
+                                    <th>
+                                        Añada
                                     </th>
 
                                     <th>
@@ -1491,6 +1631,8 @@ function actualizarTotalesVino() {
                 vino: "Yema",
 
                 litros: 0,
+
+                anada: "",
 
                 variedad: ""
 

@@ -1047,3 +1047,161 @@ select[data-campo="procedencia"] option[value="H2"] {
         font-size: 15px;
     }
 }
+
+/* ========================================================= */
+/* TABLA DE MOVIMIENTOS - AJUSTE DE COLUMNAS */
+/* ========================================================= */
+
+.movement-table {
+    width: 100%;
+    table-layout: fixed;
+}
+
+/* Procedencia */
+.movement-table th:nth-child(1),
+.movement-table td:nth-child(1) {
+    width: 15%;
+}
+
+/* Vino */
+.movement-table th:nth-child(2),
+.movement-table td:nth-child(2) {
+    width: 12%;
+}
+
+/* Litros */
+.movement-table th:nth-child(3),
+.movement-table td:nth-child(3) {
+    width: 12%;
+}
+
+/* Añada */
+.movement-table th:nth-child(4),
+.movement-table td:nth-child(4) {
+    width: 10%;
+}
+
+/* Variedad Uva / Características */
+.movement-table th:nth-child(5),
+.movement-table td:nth-child(5) {
+    width: 29%;
+}
+
+/* % */
+.movement-table th:nth-child(6),
+.movement-table td:nth-child(6) {
+    width: 10%;
+}
+
+/* Acción */
+.movement-table th:nth-child(7),
+.movement-table td:nth-child(7) {
+    width: 12%;
+}
+
+
+/* Evita que los encabezados se monten unos sobre otros */
+.movement-table th {
+    white-space: normal;
+    overflow-wrap: break-word;
+    word-break: normal;
+    vertical-align: middle;
+    line-height: 1.2;
+}
+
+/* Evita que los inputs provoquen que la tabla se ensanche */
+.movement-table input,
+.movement-table select {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    min-width: 0;
+}
+
+/* La columna de porcentaje queda centrada */
+.movement-table th:nth-child(6),
+.movement-table td:nth-child(6) {
+    text-align: center;
+    white-space: nowrap;
+}
+
+@media screen and (max-width: 700px) {
+
+    .movement-table {
+        min-width: 700px;
+    }
+
+    .table-container {
+        overflow-x: auto;
+        width: 100%;
+    }
+
+    .movement-table th,
+    .movement-table td {
+        white-space: normal;
+    }
+
+}
+
+/* =====================================================
+   TOTALES DE VINO POR AÑADA
+   ===================================================== */
+
+.total-anada {
+    margin-bottom: 16px;
+    padding: 12px;
+    background: #ffffff;
+    border: 1px solid #d6e1e8;
+    border-radius: 12px;
+}
+
+.total-anada-titulo {
+    margin-bottom: 10px;
+    padding-bottom: 8px;
+    color: #243b53;
+    font-size: 16px;
+    font-weight: 800;
+    border-bottom: 2px solid #d2e2ed;
+}
+
+.total-anada-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px;
+}
+
+.total-anada .total-vino {
+    min-width: 0;
+}
+
+
+/* Sin datos */
+
+.totales-vinos-vacio {
+    padding: 16px;
+    text-align: center;
+    color: #68757b;
+    background: #ffffff;
+    border: 1px solid #d6e1e8;
+    border-radius: 10px;
+}
+
+
+/* MÓVIL */
+
+@media screen and (max-width: 600px) {
+
+    .total-anada {
+        padding: 10px;
+    }
+
+    .total-anada-titulo {
+        font-size: 15px;
+    }
+
+    .total-anada-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 8px;
+    }
+
+}
