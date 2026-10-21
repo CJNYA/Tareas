@@ -952,7 +952,7 @@ select[data-campo="procedencia"] option[value="H2"] {
     color: #243b53;
     font-size: 18px;
     font-weight: 700;
-    border-bottom: 2px solid #d2e2ed;
+    border-bottom: 2px solid #9bc0d9;
 }
 
 /* Cuadrícula de totales */
@@ -973,7 +973,7 @@ select[data-campo="procedencia"] option[value="H2"] {
     box-sizing: border-box;
     padding: 14px 8px;
     background: #ffffff;
-    border: 1px solid #d6e1e8;
+    border: 1px solid #64a5ce;
     border-radius: 10px;
     text-align: center;
 }
@@ -1150,7 +1150,7 @@ select[data-campo="procedencia"] option[value="H2"] {
 .total-anada {
     margin-bottom: 16px;
     padding: 12px;
-    background: #ffffff;
+    background: #d78d8d;
     border: 1px solid #d6e1e8;
     border-radius: 12px;
 }
@@ -1161,7 +1161,7 @@ select[data-campo="procedencia"] option[value="H2"] {
     color: #243b53;
     font-size: 16px;
     font-weight: 800;
-    border-bottom: 2px solid #d2e2ed;
+    border-bottom: 2px solid #a2cce8;
 }
 
 .total-anada-grid {
