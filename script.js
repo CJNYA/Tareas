@@ -2293,6 +2293,10 @@ if (esPrimeraPagina) {
 
         y += 6;
 
+        // Pasar el depósito a una página nueva
+        pdf.addPage();
+        y = 15;
+
     }
 
 }
