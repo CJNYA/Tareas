@@ -821,6 +821,12 @@ function actualizarTotalesVino() {
     const totalesPorAnada = {};
 
     /* ==========================================
+   TOTAL LITROS DE TODA LA BODEGA
+========================================== */
+
+let totalLitrosBodega = 0;
+
+    /* ==========================================
        RECORRER TODOS LOS MOVIMIENTOS
        ========================================== */
 
@@ -835,6 +841,8 @@ function actualizarTotalesVino() {
             const vino = movimiento.vino;
             const litros =
                 parseFloat(movimiento.litros) || 0;
+
+                totalLitrosBodega += litros;
 
             if (!litros || !vino) {
                 return;
@@ -931,7 +939,19 @@ function actualizarTotalesVino() {
        CREAR TARJETAS DE CADA AÑADA
        ========================================== */
 
-    contenedor.innerHTML =
+    contenedor.innerHTML = `
+
+    <div style="
+        color: red;
+        font-weight: bold;
+        font-size: 18px;
+        margin-bottom: 12px;
+    ">
+        TOTAL LITROS BODEGA:
+        ${formatoNumero(totalLitrosBodega, 0)} L
+    </div>
+
+    ${
         anadasOrdenadas.map(anada => {
 
             const totales =
@@ -993,7 +1013,10 @@ function actualizarTotalesVino() {
                 </div>
             `;
 
-        }).join("");
+            }).join("")
+    }
+
+    `;
 }
 
 
@@ -1589,6 +1612,68 @@ function actualizarTotalesVino() {
 }
 
 
+/* =====================================================
+   COMPROBAR CAPACIDAD DEL DEPÓSITO
+===================================================== */
+
+function comprobarCapacidadDeposito(idDeposito) {
+
+    const deposito =
+        depositos.find(
+            (d) => d.id === idDeposito
+        );
+
+    if (!deposito) {
+        return;
+    }
+
+    /* Capacidad máxima del depósito */
+    const capacidad =
+        numero(deposito.cap);
+
+    if (!capacidad || capacidad <= 0) {
+        return;
+    }
+
+    /* Movimientos del depósito */
+    const filas =
+        movimientos[idDeposito] || [];
+
+    /* Sumar todos los litros */
+    const totalLitros =
+        filas.reduce(
+            (total, fila) =>
+                total + numero(fila.litros),
+            0
+        );
+
+    /* Comprobar si se supera la capacidad */
+    if (totalLitros > capacidad) {
+
+        alert(
+            "⚠️ CAPACIDAD SUPERADA\n\n" +
+            "Depósito: " +
+            deposito.nombre +
+            "\n\n" +
+            "Capacidad máxima: " +
+            formatoNumero(capacidad, 0) +
+            " L\n" +
+            "Litros introducidos: " +
+            formatoNumero(totalLitros, 0) +
+            " L\n\n" +
+            "Exceso: " +
+            formatoNumero(
+                totalLitros - capacidad,
+                0
+            ) +
+            " L"
+        );
+
+    }
+
+}
+
+
     /* =====================================================
        EVENTOS DE MOVIMIENTOS
     ===================================================== */
@@ -1898,12 +1983,19 @@ if (
             }
 
 
-            if (campo === "litros") {
+        
+if (campo === "litros") {
 
-                fila.litros =
-                    numero(elemento.value);
+    fila.litros =
+        numero(elemento.value);
 
-            }
+    comprobarCapacidadDeposito(
+        idDeposito
+    );
+
+}
+
+
 
             else {
 
@@ -1949,15 +2041,14 @@ if (
        EXPORTAR PDF
     ===================================================== */
 
-    function exportarPDF() {
+
+function exportarPDF() {
 
     if (!window.jspdf) {
-
         alert(
             "No se pudo cargar la librería PDF. " +
             "Comprueba la conexión a Internet y vuelve a intentarlo."
         );
-
         return;
     }
 
@@ -1968,34 +2059,34 @@ if (
         );
 
     if (!activos.length) {
-
         alert(
             "No hay depósitos activos para exportar."
         );
-
         return;
     }
 
-    const {
-        jsPDF
-    } = window.jspdf;
+    const { jsPDF } = window.jspdf;
 
-    const pdf =
-        new jsPDF();
+    const pdf = new jsPDF();
+
+    /* =====================================================
+       PRIMERA PÁGINA: TOTALES POR AÑADA
+       ===================================================== */
+
+    crearPaginaTotalesAnadasPDF(pdf);
+
+    /* =====================================================
+       PÁGINAS DE LOS DEPÓSITOS
+       ===================================================== */
 
     activos.forEach(
-        (deposito, indice) => {
+        (deposito) => {
 
-            if (indice > 0) {
-
-                pdf.addPage();
-
-            }
+            pdf.addPage();
 
             crearPaginaPDF(
                 pdf,
-                deposito,
-                indice === 0
+                deposito
             );
 
         }
@@ -2083,6 +2174,243 @@ function obtenerTotalesVinoPorAnadaPDF() {
 }
 
 
+/* =====================================================
+   CREAR PÁGINA DE TOTALES DE VINO POR AÑADA
+   ===================================================== */
+
+function crearPaginaTotalesAnadasPDF(pdf) {
+
+    const margen = 12;
+
+    let y = 15;
+
+    const datosAnadas =
+        obtenerTotalesVinoPorAnadaPDF();
+
+    const totalesAnada =
+        datosAnadas.totales;
+
+    const anadas =
+        datosAnadas.anadas;
+
+    if (anadas.length === 0) {
+        return;
+    }
+
+    pdf.setFontSize(12);
+
+    pdf.setFont(
+        "helvetica",
+        "bold"
+    );
+
+
+pdf.text(
+    "TOTALES DE VINO POR AÑADA",
+    margen,
+    y
+);
+
+y += 7;
+
+/* ==========================================
+   TOTAL LITROS DE TODA LA BODEGA
+   ========================================== */
+
+const totalLitrosBodega =
+    Object.values(totalesAnada)
+        .reduce(
+            (totalAnada, datos) =>
+                totalAnada +
+                datos.Yema +
+                datos.Prensa +
+                datos.pH +
+                datos.Barricas +
+                datos.Duelas +
+                datos.Joven,
+            0
+        );
+
+pdf.setFontSize(10);
+
+pdf.setFont(
+    "helvetica",
+    "bold"
+);
+
+/* Aplicar color rojo al texto */
+pdf.setTextColor(255, 0, 0);
+
+pdf.text(
+    "TOTAL LITROS BODEGA: " +
+    formatoNumero(totalLitrosBodega, 0) +
+    " L",
+    margen,
+    y
+);
+
+/* Restablecer el color negro */
+pdf.setTextColor(0, 0, 0);
+
+y += 8;
+
+    const columnasAnada = [
+        {
+            titulo: "Añada",
+            ancho: 28
+        },
+        {
+            titulo: "Yema",
+            ancho: 25
+        },
+        {
+            titulo: "Prensa",
+            ancho: 25
+        },
+        {
+            titulo: "pH",
+            ancho: 22
+        },
+        {
+            titulo: "Barricas",
+            ancho: 28
+        },
+        {
+            titulo: "Duelas",
+            ancho: 28
+        },
+        {
+            titulo: "Joven",
+            ancho: 28
+        }
+    ];
+
+    const altoCabeceraAnada = 7;
+    const altoFilaAnada = 6;
+
+    let xAnada = margen;
+
+    pdf.setFontSize(7);
+
+    pdf.setFont(
+        "helvetica",
+        "bold"
+    );
+
+    /* CABECERA */
+
+    columnasAnada.forEach(
+        (columna) => {
+
+            pdf.setFillColor(
+                220,
+                239,
+                220
+            );
+
+            pdf.rect(
+                xAnada,
+                y,
+                columna.ancho,
+                altoCabeceraAnada,
+                "FD"
+            );
+
+            pdf.text(
+                columna.titulo,
+                xAnada + 2,
+                y + 4.5
+            );
+
+            xAnada += columna.ancho;
+
+        }
+    );
+
+    y += altoCabeceraAnada;
+
+    /* FILAS */
+
+    pdf.setFont(
+        "helvetica",
+        "normal"
+    );
+
+    anadas.forEach(
+        (anada) => {
+
+            xAnada = margen;
+
+            const datos =
+                totalesAnada[anada];
+
+            const valoresAnada = [
+
+                anada,
+
+                formatoNumero(
+                    datos.Yema,
+                    0
+                ) + " L",
+
+                formatoNumero(
+                    datos.Prensa,
+                    0
+                ) + " L",
+
+                formatoNumero(
+                    datos.pH,
+                    0
+                ) + " L",
+
+                formatoNumero(
+                    datos.Barricas,
+                    0
+                ) + " L",
+
+                formatoNumero(
+                    datos.Duelas,
+                    0
+                ) + " L",
+
+                formatoNumero(
+                    datos.Joven,
+                    0
+                ) + " L"
+
+            ];
+
+            columnasAnada.forEach(
+                (columna, indice) => {
+
+                    pdf.rect(
+                        xAnada,
+                        y,
+                        columna.ancho,
+                        altoFilaAnada
+                    );
+
+                    pdf.text(
+                        String(
+                            valoresAnada[indice] || ""
+                        ),
+                        xAnada + 2,
+                        y + 4.2
+                    );
+
+                    xAnada += columna.ancho;
+
+                }
+            );
+
+            y += altoFilaAnada;
+
+        }
+    );
+
+}
+
+
     /* =====================================================
        CREAR PÁGINA PDF
     ===================================================== */
@@ -2103,203 +2431,6 @@ function obtenerTotalesVinoPorAnadaPDF() {
 
 
         let y = 15;
-
-        /* ---------------------------------------------
-   TOTALES DE VINO POR AÑADA
-   SOLO EN LA PRIMERA PÁGINA
---------------------------------------------- */
-
-if (esPrimeraPagina) {
-
-    const datosAnadas =
-        obtenerTotalesVinoPorAnadaPDF();
-
-    const totalesAnada =
-        datosAnadas.totales;
-
-    const anadas =
-        datosAnadas.anadas;
-
-    if (anadas.length > 0) {
-
-        pdf.setFontSize(12);
-
-        pdf.setFont(
-            "helvetica",
-            "bold"
-        );
-
-        pdf.text(
-            "TOTALES DE VINO POR AÑADA",
-            margen,
-            y
-        );
-
-        y += 6;
-
-        const columnasAnada = [
-            {
-                titulo: "Añada",
-                ancho: 28
-            },
-            {
-                titulo: "Yema",
-                ancho: 25
-            },
-            {
-                titulo: "Prensa",
-                ancho: 25
-            },
-            {
-                titulo: "pH",
-                ancho: 22
-            },
-            {
-                titulo: "Barricas",
-                ancho: 28
-            },
-            {
-                titulo: "Duelas",
-                ancho: 28
-            },
-            {
-                titulo: "Joven",
-                ancho: 28
-            }
-        ];
-
-        const altoCabeceraAnada = 7;
-        const altoFilaAnada = 6;
-
-        let xAnada = margen;
-
-        pdf.setFontSize(7);
-
-        pdf.setFont(
-            "helvetica",
-            "bold"
-        );
-
-        /* CABECERA */
-
-        columnasAnada.forEach(
-            (columna) => {
-
-                pdf.setFillColor(
-                    220,
-                    239,
-                    220
-                );
-
-                pdf.rect(
-                    xAnada,
-                    y,
-                    columna.ancho,
-                    altoCabeceraAnada,
-                    "FD"
-                );
-
-                pdf.text(
-                    columna.titulo,
-                    xAnada + 2,
-                    y + 4.5
-                );
-
-                xAnada += columna.ancho;
-
-            }
-        );
-
-        y += altoCabeceraAnada;
-
-        /* FILAS */
-
-        pdf.setFont(
-            "helvetica",
-            "normal"
-        );
-
-        anadas.forEach(
-            (anada) => {
-
-                xAnada = margen;
-
-                const datos =
-                    totalesAnada[anada];
-
-                const valoresAnada = [
-
-                    anada,
-
-                    formatoNumero(
-                        datos.Yema,
-                        0
-                    ) + " L",
-
-                    formatoNumero(
-                        datos.Prensa,
-                        0
-                    ) + " L",
-
-                    formatoNumero(
-                        datos.pH,
-                        0
-                    ) + " L",
-
-                    formatoNumero(
-                        datos.Barricas,
-                        0
-                    ) + " L",
-
-                    formatoNumero(
-                        datos.Duelas,
-                        0
-                    ) + " L",
-
-                    formatoNumero(
-                        datos.Joven,
-                        0
-                    ) + " L"
-
-                ];
-
-                columnasAnada.forEach(
-                    (columna, indice) => {
-
-                        pdf.rect(
-                            xAnada,
-                            y,
-                            columna.ancho,
-                            altoFilaAnada
-                        );
-
-                        pdf.text(
-                            String(
-                                valoresAnada[indice] || ""
-                            ),
-                            xAnada + 2,
-                            y + 4.2
-                        );
-
-                        xAnada += columna.ancho;
-
-                    }
-                );
-
-                y += altoFilaAnada;
-
-            }
-        );
-
-        y += 6;
-
-        // Pasar el depósito a una página nueva
-        pdf.addPage();
-        y = 15;
-
-    }
-
-}
 
 
         /* ---------------------------------------------
@@ -2461,7 +2592,7 @@ y += 8;
     },
 
     {
-        titulo: "%",
+        titulo: "% Porcentaje",
         ancho: 40
     }
 
@@ -2673,7 +2804,7 @@ pdf.text(
 
 pdf.text(
     "100,00 %",
-    margen + 146,
+    margen + 148,
     y + 5
 );
 
@@ -2694,7 +2825,7 @@ y += 14;
 pdf.setFontSize(12);
 
 pdf.text(
-    "Análisis",
+    "Informe de Análisis",
     margen,
     y
 );
@@ -2760,7 +2891,7 @@ pdf.setFont(
 );
 
 pdf.text(
-    "Parámetro",
+    "Parámetros",
     margen + 2,
     y + 4.7
 );
