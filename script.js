@@ -1545,8 +1545,22 @@ let totalLitrosBodega = 0;
                 "Sulfuroso Libre (mg/L)"
 )}
 
-        </tbody>
+             </tbody>
     </table>
+
+    <div class="analysis-comment">
+        <label for="comentario-analisis-${deposito.id}">
+            COMENTARIO
+        </label>
+
+        <textarea
+            id="comentario-analisis-${deposito.id}"
+            placeholder="Escribe aquí un comentario sobre el análisis..."
+            data-analisis-comentario="${deposito.id}"
+            rows="3"
+        >${escapar(deposito.comentarioAnalisis || "")}</textarea>
+    </div>
+
 </div>
 
                 </div>
@@ -1936,6 +1950,35 @@ if (
     return;
 }
 
+/* ---------------------------------------------
+   COMENTARIO DEL ANÁLISIS
+--------------------------------------------- */
+
+if (
+    elemento.matches &&
+    elemento.matches("[data-analisis-comentario]")
+) {
+
+    const idDeposito =
+        elemento.dataset.deposito;
+
+    const deposito =
+        depositos.find(
+            (d) =>
+                d.id === idDeposito
+        );
+
+    if (!deposito) {
+        return;
+    }
+
+    deposito.comentarioAnalisis =
+        elemento.value;
+
+    guardar();
+
+    return;
+}
 
         /* ---------------------------------------------
            CAMPO DE MOVIMIENTO
@@ -3085,10 +3128,76 @@ campos.forEach(
         );
 
 
+  
         y += 7;
     }
 );
+
+
+// =============================================
+// COMENTARIO DEL ANÁLISIS
+// =============================================
+
+const comentarioAnalisis =
+    (deposito.comentarioAnalisis || "").trim();
+
+if (comentarioAnalisis) {
+
+    // Espacio debajo de la tabla
+    y += 5;
+
+    pdf.setFont(
+        "helvetica",
+        "bold"
+    );
+
+    pdf.setFontSize(9);
+
+    pdf.text(
+        "Comentario:",
+        margen,
+        y
+    );
+
+    y += 5;
+
+    pdf.setFont(
+        "helvetica",
+        "normal"
+    );
+
+    pdf.setFontSize(9);
+
+    // Ajustar el texto al ancho disponible
+    const lineasComentario =
+        pdf.splitTextToSize(
+            comentarioAnalisis,
+            anchoParametro + anchoAnalisis * 2
+        );
+
+    // Comprobar si queda espacio en la página
+    const alturaComentario =
+        lineasComentario.length * 4.5;
+
+    if (
+        y + alturaComentario >
+        pdf.internal.pageSize.getHeight() - margen
+    ) {
+        pdf.addPage();
+        y = margen;
     }
+
+    pdf.text(
+        lineasComentario,
+        margen,
+        y
+    );
+
+    y += alturaComentario + 3;
+}
+
+    }
+
 
     /* ---------------------------------------------
            EXPORTAR JSON
@@ -3341,6 +3450,30 @@ campos.forEach(
             "input",
             manejarMovimientos
         );
+
+        document.addEventListener("input", function (evento) {
+
+    const elemento = evento.target;
+
+    if (!elemento.matches("[data-analisis-comentario]")) {
+        return;
+    }
+
+    const idDeposito = elemento.dataset.analisisComentario;
+
+    const deposito = depositos.find(
+        d => String(d.id) === String(idDeposito)
+    );
+
+    if (!deposito) {
+        return;
+    }
+
+    deposito.comentarioAnalisis = elemento.value;
+
+    guardar();
+
+});
 
 
        
