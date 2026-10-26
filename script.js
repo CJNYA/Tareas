@@ -1549,7 +1549,8 @@ let totalLitrosBodega = 0;
     </table>
 
     <div class="analysis-comment">
-        <label for="comentario-analisis-${deposito.id}">
+        <label for="comentario-analisis-${deposito.id}"
+        style="font-weight: bold;">
             COMENTARIO
         </label>
 
