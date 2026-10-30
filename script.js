@@ -811,6 +811,96 @@
 
     }
 
+    /* =====================================================
+   BUSCADOR DE DEPÓSITOS EN MOVIMIENTOS
+===================================================== */
+
+function buscarDepositoMovimientos() {
+
+    const buscador =
+        $("buscarDepositoMovimientos");
+
+    const resultados =
+        $("resultadosBusquedaDepositos");
+
+    if (!buscador || !resultados) {
+        return;
+    }
+
+    const texto =
+        buscador.value.trim().toLowerCase();
+
+    if (!texto) {
+        resultados.innerHTML = "";
+        return;
+    }
+
+    const encontrados =
+        depositos
+            .filter(deposito => deposito.activo)
+            .filter(deposito =>
+                String(deposito.nombre)
+                    .toLowerCase()
+                    .includes(texto)
+            );
+
+    if (!encontrados.length) {
+
+        resultados.innerHTML = `
+            <div class="resultado-busqueda-vacio">
+                No se ha encontrado ningún depósito.
+            </div>
+        `;
+
+        return;
+    }
+
+    resultados.innerHTML =
+        encontrados.map(deposito => `
+            <button
+                type="button"
+                class="resultado-busqueda-deposito"
+                data-ir-deposito="${deposito.id}"
+            >
+                Depósito ${escapar(deposito.nombre)}
+            </button>
+        `).join("");
+}
+
+
+/* =====================================================
+   IR A LA TARJETA DEL DEPÓSITO
+===================================================== */
+
+function irADepositoMovimientos(idDeposito) {
+
+    const tarjeta =
+        document.getElementById(
+            `deposito-mov-${idDeposito}`
+        );
+
+    if (!tarjeta) {
+        return;
+    }
+
+    tarjeta.scrollIntoView({
+        behavior: "smooth",
+        block: "start"
+    });
+
+    tarjeta.classList.add(
+        "deposito-encontrado"
+    );
+
+    setTimeout(() => {
+
+        tarjeta.classList.remove(
+            "deposito-encontrado"
+        );
+
+    }, 2000);
+}
+
 
 /* =====================================================
    TOTALES DE VINOS
@@ -1280,7 +1370,10 @@ let totalLitrosBodega = 0;
 
         return `
 
-            <article class="deposit-card">
+            <article
+    class="deposit-card"
+    id="deposito-mov-${deposito.id}"
+>
 
 
                 <!-- CABECERA -->
@@ -1549,8 +1642,7 @@ let totalLitrosBodega = 0;
     </table>
 
     <div class="analysis-comment">
-        <label for="comentario-analisis-${deposito.id}"
-        style="font-weight: bold;">
+        <label for="comentario-analisis-${deposito.id}">
             COMENTARIO
         </label>
 
@@ -3487,6 +3579,42 @@ $("movBody").addEventListener(
         actualizarTotalesVino();
     }
 );
+
+        /* ---------------------------------------------
+           BUSCADOR DE DEPÓSITOS
+        --------------------------------------------- */
+
+        $("buscarDepositoMovimientos").addEventListener(
+            "input",
+            buscarDepositoMovimientos
+        );
+
+
+        $("resultadosBusquedaDepositos").addEventListener(
+            "click",
+            function (evento) {
+
+                const boton =
+                    evento.target.closest(
+                        "[data-ir-deposito]"
+                    );
+
+                if (!boton) {
+                    return;
+                }
+
+                const idDeposito =
+                    boton.dataset.irDeposito;
+
+                irADepositoMovimientos(
+                    idDeposito
+                );
+
+                $("buscarDepositoMovimientos").value = "";
+
+                $("resultadosBusquedaDepositos").innerHTML = "";
+            }
+        );
 
 
         /* ---------------------------------------------
