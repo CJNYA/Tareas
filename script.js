@@ -1566,25 +1566,37 @@ let totalLitrosBodega = 0;
             <tr>
                 <th>Fecha</th>
 
-                <td>
-                    <input
-                        type="date"
-                        value="${escapar(
-                            deposito.analisis1?.fecha || ""
-                        )}"
-                        data-analisis-fecha="analisis1"
-                        data-deposito="${deposito.id}">
-                </td>
+               <td>
+  <div class="fecha-analisis-control">
+    <input
+      type="date"
+      value="${escapar(deposito.analisis1?.fecha || "")}"
+      data-analisis-fecha="analisis1"
+      data-deposito="${deposito.id}">
+    <button
+      type="button"
+      class="btn-borrar-fecha"
+      data-borrar-fecha-analisis="analisis1"
+      data-deposito="${deposito.id}"
+      title="Borrar fecha">×</button>
+  </div>
+</td>
 
-                <td>
-                    <input
-                        type="date"
-                        value="${escapar(
-                            deposito.analisis2?.fecha || ""
-                        )}"
-                        data-analisis-fecha="analisis2"
-                        data-deposito="${deposito.id}">
-                </td>
+               <td>
+  <div class="fecha-analisis-control">
+    <input
+      type="date"
+      value="${escapar(deposito.analisis2?.fecha || "")}"
+      data-analisis-fecha="analisis2"
+      data-deposito="${deposito.id}">
+    <button
+      type="button"
+      class="btn-borrar-fecha"
+      data-borrar-fecha-analisis="analisis2"
+      data-deposito="${deposito.id}"
+      title="Borrar fecha">×</button>
+  </div>
+</td>
             </tr>
         </thead>
 
@@ -1912,6 +1924,49 @@ if (
         elemento.value;
 
     guardar();
+
+    return;
+}
+
+/* ---------------------------------------------
+   BORRAR FECHA DE ANÁLISIS
+--------------------------------------------- */
+
+const botonBorrarFecha = elemento.closest(
+    "[data-borrar-fecha-analisis]"
+);
+
+if (botonBorrarFecha) {
+
+    const idDeposito =
+        botonBorrarFecha.dataset.deposito;
+
+    const bloque =
+        botonBorrarFecha.dataset.borrarFechaAnalisis;
+
+    const deposito = depositos.find(
+        (d) => String(d.id) === String(idDeposito)
+    );
+
+    if (!deposito) return;
+
+    if (!deposito[bloque]) {
+        deposito[bloque] = {};
+    }
+
+    deposito[bloque].fecha = "";
+
+    guardar();
+
+    const tarjeta = botonBorrarFecha.closest(".deposit-card");
+
+    const campoFecha = tarjeta?.querySelector(
+        `[data-analisis-fecha="${bloque}"]`
+    );
+
+    if (campoFecha) {
+        campoFecha.value = "";
+    }
 
     return;
 }

@@ -1331,3 +1331,36 @@ select[data-campo="procedencia"] option[value="H2"] {
 
 }
 
+/* BOTÓN PARA BORRAR FECHAS DE ANÁLISIS */
+
+.fecha-analisis-control {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    width: 100%;
+}
+
+.fecha-analisis-control input {
+    flex: 1;
+    min-width: 0;
+}
+
+.btn-borrar-fecha {
+    flex: 0 0 30px;
+    width: 30px;
+    height: 30px;
+    padding: 0;
+    border: none;
+    border-radius: 6px;
+    background: #f5e5e5;
+    color: #a52a2a;
+    font-size: 21px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.btn-borrar-fecha:active {
+    background: #a52a2a;
+    color: white;
+}
+
