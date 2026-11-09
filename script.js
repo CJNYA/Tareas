@@ -768,48 +768,46 @@
        RENDERIZAR MOVIMIENTOS
     ===================================================== */
 
-    function renderizarMovimientos() {
+   function renderizarMovimientos() {
 
-        const contenedor =
-            $("movBody");
+    const contenedor =
+        $("movBody");
 
+    const vacio =
+        $("movEmpty");
 
-        const vacio =
-            $("movEmpty");
+    const activos =
+        depositos.filter(
+            deposito => deposito.activo
+        );
 
+    if (!activos.length) {
 
-        const activos =
-            depositos.filter(
-                (deposito) =>
-                    deposito.activo
-            );
+        contenedor.innerHTML = "";
 
+        vacio.style.display = "block";
 
-        if (!activos.length) {
+        actualizarTotalesVino();
 
-            contenedor.innerHTML = "";
+        actualizarMediasAnalisisAnada();
 
-            vacio.style.display = "block";
-
-            return;
-
-        }
-
-
-        vacio.style.display = "none";
-
-
-        contenedor.innerHTML =
-            activos
-                .map(
-                    (deposito) =>
-                        crearTarjetaDeposito(deposito)
-                )
-                .join("");
-
-                actualizarTotalesVino();
-
+        return;
     }
+
+    vacio.style.display = "none";
+
+    contenedor.innerHTML =
+        activos
+            .map(deposito =>
+                crearTarjetaDeposito(deposito)
+            )
+            .join("");
+
+    actualizarTotalesVino();
+
+    actualizarMediasAnalisisAnada();
+
+}
 
     /* =====================================================
    BUSCADOR DE DEPÓSITOS EN MOVIMIENTOS
@@ -1107,6 +1105,310 @@ let totalLitrosBodega = 0;
     }
 
     `;
+}
+
+/* =====================================================
+   MEDIA DE ANÁLISIS 2 POR AÑADA
+===================================================== */
+
+function actualizarMediasAnalisisAnada() {
+
+    const contenedor =
+        $("medias-analisis-contenido");
+
+    if (!contenedor) {
+        return;
+    }
+
+    const mediasPorAnada = {};
+
+    /*
+       Solo recorremos depósitos activos.
+       Cada depósito aporta sus análisis 2
+       repartidos entre sus añadas según sus litros.
+    */
+
+    const depositosActivos =
+        depositos.filter(deposito => deposito.activo);
+
+    depositosActivos.forEach(deposito => {
+
+        const filas =
+            movimientos[deposito.id] || [];
+
+        if (!Array.isArray(filas) || !filas.length) {
+            return;
+        }
+
+        /*
+           Primero calculamos cuántos litros
+           corresponden a cada añada en este depósito.
+        */
+
+        const litrosPorAnada = {};
+
+        filas.forEach(movimiento => {
+
+            const litros = numero(movimiento.litros);
+
+            if (!litros || litros <= 0 || !movimiento.vino) {
+                return;
+            }
+
+            const anada =
+                movimiento.anada !== undefined &&
+                movimiento.anada !== null &&
+                String(movimiento.anada).trim() !== ""
+                    ? String(movimiento.anada).trim()
+                    : "Sin añada";
+
+            if (!litrosPorAnada[anada]) {
+                litrosPorAnada[anada] = 0;
+            }
+
+            litrosPorAnada[anada] += litros;
+
+        });
+
+        /*
+           Recuperamos exclusivamente el análisis 2.
+        */
+
+        const analisis =
+            deposito.analisis2 || {};
+
+        const alcohol =
+            convertirValorAnalisis(analisis.alcohol);
+
+        const ph =
+            convertirValorAnalisis(analisis.ph);
+
+        const acidez =
+            convertirValorAnalisis(analisis.acidez);
+
+        /*
+           Repartimos los valores del análisis
+           proporcionalmente a los litros de cada añada.
+        */
+
+        Object.entries(litrosPorAnada).forEach(
+            ([anada, litros]) => {
+
+                if (!mediasPorAnada[anada]) {
+
+                    mediasPorAnada[anada] = {
+                        litros: 0,
+
+                        alcoholSuma: 0,
+                        alcoholLitros: 0,
+
+                        acidezSuma: 0,
+                        acidezLitros: 0,
+
+                        phSuma: 0,
+                        phLitros: 0
+                    };
+
+                }
+
+                const datos =
+                    mediasPorAnada[anada];
+
+                datos.litros += litros;
+
+                /*
+                   Alcohol: media ponderada por litros.
+                */
+
+                if (
+                    alcohol !== null &&
+                    alcohol >= 0
+                ) {
+
+                    datos.alcoholSuma +=
+                        alcohol * litros;
+
+                    datos.alcoholLitros += litros;
+
+                }
+
+                /*
+                   Acidez total: media ponderada por litros.
+                */
+
+                if (
+                    acidez !== null &&
+                    acidez >= 0
+                ) {
+
+                    datos.acidezSuma +=
+                        acidez * litros;
+
+                    datos.acidezLitros += litros;
+
+                }
+
+                /*
+                   pH: se pondera la actividad del hidrógeno,
+                   no se hace una media aritmética directa.
+                */
+
+                if (
+                    ph !== null &&
+                    ph > 0 &&
+                    ph <= 14
+                ) {
+
+                    datos.phSuma +=
+                        Math.pow(10, -ph) * litros;
+
+                    datos.phLitros += litros;
+
+                }
+
+            }
+        );
+
+    });
+
+
+    /*
+       Ordenar las añadas de mayor a menor.
+    */
+
+    const anadasOrdenadas =
+        Object.keys(mediasPorAnada).sort((a, b) => {
+
+            if (a === "Sin añada") return 1;
+            if (b === "Sin añada") return -1;
+
+            return Number(b) - Number(a);
+
+        });
+
+
+    if (!anadasOrdenadas.length) {
+
+        contenedor.innerHTML = `
+            <div class="totales-vinos-vacio">
+                No hay litros registrados en depósitos activos.
+            </div>
+        `;
+
+        return;
+    }
+
+
+    /*
+       Crear las tarjetas de resultados.
+    */
+
+    contenedor.innerHTML = anadasOrdenadas.map(anada => {
+
+        const datos =
+            mediasPorAnada[anada];
+
+        const mediaAlcohol =
+            datos.alcoholLitros > 0
+                ? datos.alcoholSuma / datos.alcoholLitros
+                : null;
+
+        const mediaAcidez =
+            datos.acidezLitros > 0
+                ? datos.acidezSuma / datos.acidezLitros
+                : null;
+
+        const mediaPH =
+            datos.phLitros > 0
+                ? -Math.log10(
+                    datos.phSuma / datos.phLitros
+                  )
+                : null;
+
+
+        return `
+            <div class="total-anada">
+
+                <div class="total-anada-titulo">
+                    Añada ${escapar(anada)}
+                </div>
+
+                <div class="total-anada-grid">
+
+                    <div class="total-vino">
+                        <span>🍷 Litros Considerados</span>
+                        <strong>
+                            ${formatoNumero(datos.litros, 0)} L
+                        </strong>
+                    </div>
+
+                    <div class="total-vino">
+                        <span>🍷 Grado Alcohólico Medio</span>
+                        <strong>
+                            ${
+                                mediaAlcohol !== null
+                                    ? formatoNumero(mediaAlcohol, 2) + " % Vol"
+                                    : "Sin datos"
+                            }
+                        </strong>
+                    </div>
+
+                    <div class="total-vino">
+                        <span>🧪 pH Medio Estimado</span>
+                        <strong>
+                            ${
+                                mediaPH !== null
+                                    ? formatoNumero(mediaPH, 2)
+                                    : "Sin datos"
+                            }
+                        </strong>
+                    </div>
+
+                    <div class="total-vino">
+                        <span>🧪 Acidez Total Media</span>
+                        <strong>
+                            ${
+                                mediaAcidez !== null
+                                    ? formatoNumero(mediaAcidez, 2) + " g/L"
+                                    : "Sin datos"
+                            }
+                        </strong>
+                    </div>
+
+                </div>
+
+            </div>
+        `;
+
+    }).join("");
+
+}
+
+
+/* =====================================================
+   CONVERTIR VALORES DEL ANÁLISIS A NÚMEROS
+===================================================== */
+
+function convertirValorAnalisis(valor) {
+
+    if (
+        valor === undefined ||
+        valor === null ||
+        String(valor).trim() === ""
+    ) {
+        return null;
+    }
+
+    const resultado =
+        Number(
+            String(valor)
+                .trim()
+                .replace(",", ".")
+        );
+
+    return Number.isFinite(resultado)
+        ? resultado
+        : null;
 }
 
 
@@ -2599,7 +2901,266 @@ y += 8;
         }
     );
 
+    // AÑADIR MEDIAS DE ANÁLISIS DEBAJO DE LOS LITROS
+
+    y += 9;
+
+    crearMediasAnalisisAnadasPDF(pdf, y);
+
 }
+
+
+/* =====================================================
+   MEDIAS DE ANÁLISIS POR AÑADA PARA PDF
+===================================================== */
+
+function crearMediasAnalisisAnadasPDF(pdf, y) {
+
+    const margen = 12;
+
+    const mediasPorAnada = {};
+
+    // RECORRER DEPÓSITOS ACTIVOS
+
+    depositos
+        .filter(deposito => deposito.activo)
+        .forEach(deposito => {
+
+            const filas = movimientos[deposito.id] || [];
+
+            if (!Array.isArray(filas) || !filas.length) {
+                return;
+            }
+
+            const litrosPorAnada = {};
+
+            filas.forEach(movimiento => {
+
+                const litros = numero(movimiento.litros);
+
+                if (!litros || litros <= 0 || !movimiento.vino) {
+                    return;
+                }
+
+                const anada =
+                    movimiento.anada !== undefined &&
+                    movimiento.anada !== null &&
+                    String(movimiento.anada).trim() !== ""
+                        ? String(movimiento.anada).trim()
+                        : "Sin añada";
+
+                litrosPorAnada[anada] =
+                    (litrosPorAnada[anada] || 0) + litros;
+
+            });
+
+            const analisis = deposito.analisis2 || {};
+
+            const alcohol =
+                convertirValorAnalisis(analisis.alcohol);
+
+            const ph =
+                convertirValorAnalisis(analisis.ph);
+
+            const acidez =
+                convertirValorAnalisis(analisis.acidez);
+
+            Object.entries(litrosPorAnada).forEach(
+                ([anada, litros]) => {
+
+                    if (!mediasPorAnada[anada]) {
+
+                        mediasPorAnada[anada] = {
+                            litros: 0,
+
+                            alcoholSuma: 0,
+                            alcoholLitros: 0,
+
+                            acidezSuma: 0,
+                            acidezLitros: 0,
+
+                            phSuma: 0,
+                            phLitros: 0
+                        };
+
+                    }
+
+                    const datos = mediasPorAnada[anada];
+
+                    datos.litros += litros;
+
+                    if (alcohol !== null && alcohol >= 0) {
+
+                        datos.alcoholSuma += alcohol * litros;
+                        datos.alcoholLitros += litros;
+
+                    }
+
+                    if (acidez !== null && acidez >= 0) {
+
+                        datos.acidezSuma += acidez * litros;
+                        datos.acidezLitros += litros;
+
+                    }
+
+                    if (ph !== null && ph > 0 && ph <= 14) {
+
+                        datos.phSuma += Math.pow(10, -ph) * litros;
+                        datos.phLitros += litros;
+
+                    }
+
+                }
+            );
+
+        });
+
+
+    // ORDENAR AÑADAS
+
+    const anadas = Object.keys(mediasPorAnada).sort((a, b) => {
+
+        if (a === "Sin añada") return 1;
+        if (b === "Sin añada") return -1;
+
+        return Number(b) - Number(a);
+
+    });
+
+    if (!anadas.length) {
+        return;
+    }
+
+
+    // TÍTULO
+
+    pdf.setFont("helvetica", "bold");
+    pdf.setFontSize(11);
+
+    pdf.text(
+        "MEDIA DE ANÁLISIS POR AÑADA",
+        margen,
+        y
+    );
+
+    y += 7;
+
+
+    // COLUMNAS
+
+    const columnas = [
+        { titulo: "Añada", ancho: 30 },
+        { titulo: "Litros Considerados", ancho: 38 },
+        { titulo: "Alcohol Medio", ancho: 38 },
+        { titulo: "pH Estimado", ancho: 35 },
+        { titulo: "Acidez Media", ancho: 43 }
+    ];
+
+    const altoCabecera = 7;
+    const altoFila = 7;
+
+    let x = margen;
+
+    pdf.setFontSize(7);
+    pdf.setFont("helvetica", "bold");
+
+    // CABECERA
+
+    columnas.forEach(columna => {
+
+        pdf.setFillColor(220, 239, 220);
+
+        pdf.rect(
+            x,
+            y,
+            columna.ancho,
+            altoCabecera,
+            "FD"
+        );
+
+        pdf.text(
+            columna.titulo,
+            x + 2,
+            y + 4.5
+        );
+
+        x += columna.ancho;
+
+    });
+
+    y += altoCabecera;
+
+
+    // FILAS DE RESULTADOS
+
+    pdf.setFont("helvetica", "normal");
+
+    anadas.forEach(anada => {
+
+        const datos = mediasPorAnada[anada];
+
+        const mediaAlcohol =
+            datos.alcoholLitros > 0
+                ? datos.alcoholSuma / datos.alcoholLitros
+                : null;
+
+        const mediaPH =
+            datos.phLitros > 0
+                ? -Math.log10(datos.phSuma / datos.phLitros)
+                : null;
+
+        const mediaAcidez =
+            datos.acidezLitros > 0
+                ? datos.acidezSuma / datos.acidezLitros
+                : null;
+
+        const valores = [
+
+            anada,
+
+            formatoNumero(datos.litros, 0) + " L",
+
+            mediaAlcohol !== null
+                ? formatoNumero(mediaAlcohol, 2) + " % Vol"
+                : "Sin datos",
+
+            mediaPH !== null
+                ? formatoNumero(mediaPH, 2)
+                : "Sin datos",
+
+            mediaAcidez !== null
+                ? formatoNumero(mediaAcidez, 2) + " g/L"
+                : "Sin datos"
+
+        ];
+
+        x = margen;
+
+        columnas.forEach((columna, indice) => {
+
+            pdf.rect(
+                x,
+                y,
+                columna.ancho,
+                altoFila
+            );
+
+            pdf.text(
+                String(valores[indice]),
+                x + 2,
+                y + 4.5
+            );
+
+            x += columna.ancho;
+
+        });
+
+        y += altoFila;
+
+    });
+
+}
+
 
 
     /* =====================================================
@@ -3632,6 +4193,8 @@ $("movBody").addEventListener(
         manejarMovimientos(evento);
 
         actualizarTotalesVino();
+
+        actualizarMediasAnalisisAnada();
     }
 );
 
