@@ -2585,9 +2585,15 @@ function exportarPDF() {
         }
     );
 
-    pdf.save(
-        "Informe_Depositos.pdf"
-    );
+    const fechaPDF = new Date();
+
+const dia = String(fechaPDF.getDate()).padStart(2, "0");
+const mes = String(fechaPDF.getMonth() + 1).padStart(2, "0");
+const anio = fechaPDF.getFullYear();
+
+const nombreArchivo = `Informe Depositos (${dia}-${mes}-${anio}).pdf`;
+
+pdf.save(nombreArchivo);
 
 }
 
